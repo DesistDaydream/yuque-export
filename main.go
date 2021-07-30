@@ -66,11 +66,3 @@ func main() {
 	}
 
 }
-
-type ExportDatas struct {
-	Data ExportData `json:"data"`
-}
-type ExportData struct {
-	State string `json:"state"`
-	URL   string `json:"url"`
-}
