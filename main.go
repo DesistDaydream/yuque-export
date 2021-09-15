@@ -35,6 +35,7 @@ func main() {
 	logLevel := pflag.String("log-level", "info", "The logging level:[debug, info, warn, error, fatal]")
 	logFile := pflag.String("log-output", "", "the file which log to, default stdout")
 	userToken := pflag.String("token", "", "用户 Token,在 https://www.yuque.com/settings/tokens/ 创建")
+	userCookie := pflag.String("cookie", "", "用户 Cookie,通过浏览器的 F12 查看")
 	pflag.Parse()
 
 	// 初始化日志
@@ -51,7 +52,7 @@ func main() {
 	// 逐一导出节点内容
 	for _, discoveredTOC := range discoveredTOCs {
 		// 获取待导出笔记的 URL
-		exportURL, err := GetURLForExportToc(discoveredTOC)
+		exportURL, err := GetURLForExportToc(discoveredTOC, *userCookie)
 		if err != nil {
 			logrus.Error("获取导出 TOC 的 URL 失败：", err)
 		}

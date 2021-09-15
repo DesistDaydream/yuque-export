@@ -46,9 +46,12 @@ type TOCData struct {
 	Slug string `json:"slug"`
 }
 
-// GetToc is
+// GetToc is 获取指定 namespace 下的 Toc 目录
 func GetToc(token string) ([]TOCData, error) {
-	url := "https://www.yuque.com/api/v2/repos/desistdaydream/learning/toc"
+	// TODO 提出来，当做用户信息，写到一个 struct 中
+	namespace := "desistdaydream/learning"
+
+	url := "https://www.yuque.com/api/v2/repos/" + namespace + "/toc"
 	method := "GET"
 
 	client := &http.Client{}

@@ -20,10 +20,9 @@ type ReqBodyForExportToc struct {
 }
 
 // GetURLForExportToc is
-func GetURLForExportToc(tocdata TOCData) (string, error) {
+func GetURLForExportToc(tocdata TOCData, cookie string) (string, error) {
 	url := "https://www.yuque.com/api/books/11199981/export"
 	method := "POST"
-	cookie := "lang=zh-cn; UM_distinctid=179878f14125d7-03c4269457230e-d7e1938-13c680-179878f1413741; _yuque_session=sLIjjTe_9QQlnNpb8Yqp3JmXGeN5fAZ7RUg0_yio1-eMSxOQkYsDLWCta4OHciN_B3HxLo6UjSrwG0V6paVIlw==; yuque_ctoken=3t1WleUAVuVSM5P-82xwT3Bl; _TRACERT_COOKIE__SESSION=b953f580-10e0-425d-9f54-d2367dfeeec4; CNZZDATA1272061571=342748924-1621473690-%7C1627262936; acw_tc=0bda731d16272645601475651e94cbe981689b1cba5086f935f95bd9a2b734; tree=a385%01fe6f8647-d16e-433d-a56e-cc00418220fd%0129"
 
 	// 根据节点信息，配置当前待导出节点的请求体信息
 	reqBodyForExportToc := ReqBodyForExportToc{
