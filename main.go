@@ -9,15 +9,18 @@ import (
 )
 
 func LogInit(level, file string) error {
-	logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:   true,
+	logrus.SetFormatter(&logrus.JSONFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
-	le, err := logrus.ParseLevel(level)
+	// logrus.SetFormatter(&logrus.TextFormatter{
+	// 	FullTimestamp:   true,
+	// 	TimestampFormat: "2006-01-02 15:04:05",
+	// })
+	l, err := logrus.ParseLevel(level)
 	if err != nil {
 		return err
 	}
-	logrus.SetLevel(le)
+	logrus.SetLevel(l)
 
 	if file != "" {
 		f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE, 0755)
@@ -43,6 +46,7 @@ func main() {
 		logrus.Fatal(errors.Wrap(err, "set log level error"))
 	}
 
+	// logrus.Info("日志格式测试")
 	// 获取待导出节点的信息
 	discoveredTOCs, err := GetToc(*userToken)
 	if err != nil {
