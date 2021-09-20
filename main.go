@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -10,7 +12,14 @@ import (
 
 func LogInit(level, file string) error {
 	logrus.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat: "2006-01-02 15:04:05",
+		TimestampFormat:   "2006-01-02 15:04:05",
+		DisableTimestamp:  false,
+		DisableHTMLEscape: false,
+		DataKey:           "",
+		// FieldMap:          map[logrus.fieldKey]string{},
+		// CallerPrettyfier: func(*runtime.Frame) (string, string) {
+		// },
+		// PrettyPrint: true,
 	})
 	// logrus.SetFormatter(&logrus.TextFormatter{
 	// 	FullTimestamp:   true,
@@ -37,8 +46,9 @@ func main() {
 	// 设置命令行标志
 	logLevel := pflag.String("log-level", "info", "The logging level:[debug, info, warn, error, fatal]")
 	logFile := pflag.String("log-output", "", "the file which log to, default stdout")
-	userToken := pflag.String("token", "", "用户 Token,在 https://www.yuque.com/settings/tokens/ 创建")
-	userCookie := pflag.String("cookie", "", "用户 Cookie,通过浏览器的 F12 查看")
+	export := pflag.Bool("export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
+	opts := &YuqueUserOpts{}
+	opts.AddFlag()
 	pflag.Parse()
 
 	// 初始化日志
@@ -46,28 +56,45 @@ func main() {
 		logrus.Fatal(errors.Wrap(err, "set log level error"))
 	}
 
-	// logrus.Info("日志格式测试")
+	// 实例化语雀用户数据
+	yud := NewYuqueUserData(*opts)
+
 	// 获取待导出节点的信息
-	discoveredTOCs, err := GetToc(*userToken)
+	discoveredTOCs, err := GetToc(yud.Opts.Token)
 	if err != nil {
-		logrus.Error("获取待导出 TOC 信息失败：", err)
+		logrus.WithFields(logrus.Fields{"err": err}).Error("获取待导出 TOC 信息失败！")
 	}
+
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
+	concurrenceControl := make(chan bool, 1)
 
 	// 逐一导出节点内容
 	for _, discoveredTOC := range discoveredTOCs {
-		// 获取待导出笔记的 URL
-		exportURL, err := GetURLForExportToc(discoveredTOC, *userCookie)
-		if err != nil {
-			logrus.Error("获取导出 TOC 的 URL 失败：", err)
-		}
+		concurrenceControl <- true
+		wg.Add(1)
 
-		logrus.Info("待导出 TOC 的 URL 为：", exportURL)
+		go func(discoveredTOC TOCData) {
+			defer wg.Done()
+			// 获取待导出笔记的 URL
+			exportURL, err := yud.GetURLForExportToc(discoveredTOC)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{"err": err, "toc": discoveredTOC.Title, "url": exportURL}).Error("获取待导出 TOC 的 URL 失败！")
+			}
 
-		// 开始导出笔记
-		err = ExportDoc(exportURL, discoveredTOC.Title)
-		if err != nil {
-			logrus.Error("导出 TOC 失败：", err)
-		}
+			// 开始导出笔记
+			if *export {
+				err = ExportDoc(exportURL, discoveredTOC.Title)
+				if err != nil {
+					logrus.WithFields(logrus.Fields{"err": err}).Error("导出 TOC 失败！")
+				}
+			}
+			<-concurrenceControl
+		}(discoveredTOC)
+
+		// 介语雀不让并发太多啊。。。。。接口请求多了。。。直接限流了。。。囧
+		time.Sleep(10 * time.Second)
 	}
 
 }
