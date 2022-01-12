@@ -4,17 +4,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/DesistDaydream/yuque-export/pkg/get"
+	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
 )
 
-func Run(yud *get.YuqueUserData, isExport *bool) {
-	// 获取待导出节点的信息
-	discoveredTOCs, err := get.GetToc(yud.Opts.Token)
-	if err != nil {
-		logrus.WithFields(logrus.Fields{"err": err}).Error("获取待导出 TOC 信息失败！")
-	}
-
+func Run(opts handler.YuqueUserOpts, discoveredTOCs []handler.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -25,19 +19,25 @@ func Run(yud *get.YuqueUserData, isExport *bool) {
 		concurrenceControl <- true
 		wg.Add(1)
 
-		go func(discoveredTOC get.TOCData) {
+		go func(discoveredTOC handler.TOC) {
 			defer wg.Done()
 			// 获取待导出笔记的 URL
-			exportURL, err := yud.GetURLForExportToc(discoveredTOC)
+			exportURL, err := handler.GetURLForExportToc(discoveredTOC, opts)
 			if err != nil {
-				logrus.WithFields(logrus.Fields{"err": err, "toc": discoveredTOC.Title, "url": exportURL}).Error("获取待导出 TOC 的 URL 失败!")
+				logrus.WithFields(logrus.Fields{
+					"err": err,
+					"toc": discoveredTOC.Title,
+					"url": exportURL,
+				}).Error("获取待导出 TOC 的 URL 失败!")
 			}
 
 			// 开始导出笔记
-			if *isExport {
+			if opts.IsExport {
 				err = ExportDoc(exportURL, discoveredTOC.Title)
 				if err != nil {
-					logrus.WithFields(logrus.Fields{"err": err}).Error("导出 TOC 失败！")
+					logrus.WithFields(logrus.Fields{
+						"err": err,
+					}).Error("导出 TOC 失败!")
 				}
 			}
 			<-concurrenceControl

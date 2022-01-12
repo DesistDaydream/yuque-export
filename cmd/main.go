@@ -5,12 +5,24 @@ import (
 	"os"
 
 	"github.com/DesistDaydream/yuque-export/pkg/export"
-	"github.com/DesistDaydream/yuque-export/pkg/get"
+	"github.com/DesistDaydream/yuque-export/pkg/handler"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
+
+type yuqueExportFlags struct {
+	logLevel  string
+	logFile   string
+	logFormat string
+}
+
+func (flags *yuqueExportFlags) AddYuqueExportFlags() {
+	pflag.StringVar(&flags.logLevel, "log-level", "info", "The logging level:[debug, info, warn, error, fatal]")
+	pflag.StringVar(&flags.logFile, "log-output", "", "the file which log to, default stdout")
+	pflag.StringVar(&flags.logFormat, "log-format", "text", "log format,one of: json|text")
+}
 
 // LogInit 日志功能初始化，若指定了 log-output 命令行标志，则将日志写入到文件中
 func LogInit(level, file, format string) error {
@@ -50,23 +62,46 @@ func LogInit(level, file, format string) error {
 
 	return nil
 }
+
 func main() {
 	// 设置命令行标志
-	logLevel := pflag.String("log-level", "info", "The logging level:[debug, info, warn, error, fatal]")
-	logFile := pflag.String("log-output", "", "the file which log to, default stdout")
-	logFormat := pflag.String("log-format", "text", "log format,one of: json|text")
-	isExport := pflag.Bool("export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
-	opts := &get.YuqueUserOpts{}
+	flags := &yuqueExportFlags{}
+	flags.AddYuqueExportFlags()
+	opts := &handler.YuqueUserOpts{}
 	opts.AddFlag()
 	pflag.Parse()
 
 	// 初始化日志
-	if err := LogInit(*logLevel, *logFile, *logFormat); err != nil {
+	if err := LogInit(flags.logLevel, flags.logFile, flags.logFormat); err != nil {
 		logrus.Fatal(errors.Wrap(err, "set log level error"))
 	}
 
-	// 实例化语雀用户数据
-	yud := get.NewYuqueUserData(*opts)
+	h := handler.NewHandlerObject(*opts)
 
-	export.Run(yud, isExport)
+	// 获取用户信息
+	userData, err := h.GetUserData()
+	if err != nil {
+		panic(err)
+	}
+
+	logrus.Debug(userData)
+
+	// 获取知识库列表
+	reposList, err := h.GetReposList()
+	if err != nil {
+		panic(err)
+	}
+
+	for _, repo := range reposList.Data {
+		if repo.Name == opts.RepoName {
+			h.Namespace = repo.ID
+		}
+	}
+
+	// 发现需要导出的文档
+	discoveredTOCs, err := h.DiscoveredTocs()
+	if err != nil {
+		panic(err)
+	}
+	export.Run(*opts, discoveredTOCs)
 }
