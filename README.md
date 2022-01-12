@@ -14,7 +14,7 @@
 - referer 为当前知识库的 URL
 
 ```bash
-go run cmd/main.go --log-level=debug --yuque-user-token="XXX" --yuque-user-cookie="YYY" --yuque-referer="ZZZ" --yuque-user-name="DesistDaydream" --yuque-repo-name="学习知识库" --export=true
+go run cmd/main.go --log-level=debug --user-token="XXX" --user-cookie="YYY" --referer="ZZZ" --user-name="DesistDaydream" --repo-name="学习知识库" --export=true
 ```
 
 # TODO
