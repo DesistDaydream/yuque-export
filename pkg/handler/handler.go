@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// 用来处理语雀API的数据
 type HandlerObject struct {
 	UserName string
 	Token    string
@@ -15,6 +16,7 @@ type HandlerObject struct {
 	TocDepth int
 }
 
+// 根据命令行标志实例化一个处理器
 func NewHandlerObject(opts YuqueUserOpts) *HandlerObject {
 	return &HandlerObject{
 		UserName:  opts.UserName,
@@ -24,6 +26,7 @@ func NewHandlerObject(opts YuqueUserOpts) *HandlerObject {
 	}
 }
 
+// 从语雀的 API 中获取用户数据
 func (h *HandlerObject) GetUserData() (*UserData, error) {
 	var user UserData
 	url := YuqueBaseAPI + YuqueUserAPI
@@ -39,6 +42,7 @@ func (h *HandlerObject) GetUserData() (*UserData, error) {
 	return &user, nil
 }
 
+// 从语雀的 API 中获取知识库列表
 func (h *HandlerObject) GetReposList() (*ReposList, error) {
 	var repos ReposList
 	url := YuqueBaseAPI + "/users/" + h.UserName + YuqueReposAPI
@@ -54,7 +58,8 @@ func (h *HandlerObject) GetReposList() (*ReposList, error) {
 	return &repos, err
 }
 
-func (h *HandlerObject) GetTocsData() (*TocsData, error) {
+// 从语雀的 API 中获取知识库内的文档列表
+func (h *HandlerObject) GetTocsList() (*TocsData, error) {
 	var toc TocsData
 	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/toc"
 	logrus.WithFields(logrus.Fields{
@@ -69,13 +74,14 @@ func (h *HandlerObject) GetTocsData() (*TocsData, error) {
 	return &toc, err
 }
 
+// 根据用户设定，筛选出需要导出的文档
 func (h *HandlerObject) DiscoveredTocs() ([]TOC, error) {
 	var (
 		discoveredTOCs []TOC // 已发现节点
 	)
 
 	// 获取待导出节点的信息
-	tocs, err := h.GetTocsData()
+	tocs, err := h.GetTocsList()
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"err": err,

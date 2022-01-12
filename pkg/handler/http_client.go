@@ -11,6 +11,7 @@ type YuqueData interface {
 	Get()
 }
 
+// 处理语雀 API 是要使用的 HTTP 处理器
 func HttpHandler(method, url, token string, data YuqueData) (interface{}, error) {
 	client := &http.Client{}
 
