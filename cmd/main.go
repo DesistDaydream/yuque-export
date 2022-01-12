@@ -5,6 +5,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/DesistDaydream/yuque-export/pkg/export"
+	"github.com/DesistDaydream/yuque-export/pkg/get"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
@@ -46,8 +49,8 @@ func main() {
 	// 设置命令行标志
 	logLevel := pflag.String("log-level", "info", "The logging level:[debug, info, warn, error, fatal]")
 	logFile := pflag.String("log-output", "", "the file which log to, default stdout")
-	export := pflag.Bool("export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
-	opts := &YuqueUserOpts{}
+	isExport := pflag.Bool("export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
+	opts := &get.YuqueUserOpts{}
 	opts.AddFlag()
 	pflag.Parse()
 
@@ -57,10 +60,10 @@ func main() {
 	}
 
 	// 实例化语雀用户数据
-	yud := NewYuqueUserData(*opts)
+	yud := get.NewYuqueUserData(*opts)
 
 	// 获取待导出节点的信息
-	discoveredTOCs, err := GetToc(yud.Opts.Token)
+	discoveredTOCs, err := get.GetToc(yud.Opts.Token)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{"err": err}).Error("获取待导出 TOC 信息失败！")
 	}
@@ -75,17 +78,17 @@ func main() {
 		concurrenceControl <- true
 		wg.Add(1)
 
-		go func(discoveredTOC TOCData) {
+		go func(discoveredTOC get.TOCData) {
 			defer wg.Done()
 			// 获取待导出笔记的 URL
 			exportURL, err := yud.GetURLForExportToc(discoveredTOC)
 			if err != nil {
-				logrus.WithFields(logrus.Fields{"err": err, "toc": discoveredTOC.Title, "url": exportURL}).Error("获取待导出 TOC 的 URL 失败！")
+				logrus.WithFields(logrus.Fields{"err": err, "toc": discoveredTOC.Title, "url": exportURL}).Error("获取待导出 TOC 的 URL 失败!")
 			}
 
 			// 开始导出笔记
-			if *export {
-				err = ExportDoc(exportURL, discoveredTOC.Title)
+			if *isExport {
+				err = export.ExportDoc(exportURL, discoveredTOC.Title)
 				if err != nil {
 					logrus.WithFields(logrus.Fields{"err": err}).Error("导出 TOC 失败！")
 				}
