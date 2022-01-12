@@ -21,8 +21,8 @@ type ReqBodyForExportToc struct {
 }
 
 // GetURLForExportToc 获取待导出 TOC 的 URL
-func GetURLForExportToc(toc TOC, opts YuqueUserOpts) (string, error) {
-	url := "https://www.yuque.com/api/books/" + "11199981" + "/export"
+func GetURLForExportToc(h HandlerObject, toc TOC) (string, error) {
+	url := "https://www.yuque.com/api/books/" + fmt.Sprint(h.Namespace) + "/export"
 	method := "POST"
 
 	// 根据节点信息，配置当前待导出节点的请求体信息
@@ -57,8 +57,8 @@ func GetURLForExportToc(toc TOC, opts YuqueUserOpts) (string, error) {
 	// req.Header.Add("sec-fetch-site", "same-origin")
 	// req.Header.Add("sec-fetch-mode", "cors")
 	// req.Header.Add("sec-fetch-dest", "empty")
-	req.Header.Add("referer", opts.Referer)
-	req.Header.Add("cookie", opts.Cookie)
+	req.Header.Add("referer", h.Opts.Referer)
+	req.Header.Add("cookie", h.Opts.Cookie)
 
 	// 建立连接
 	client := &http.Client{}
@@ -74,7 +74,7 @@ func GetURLForExportToc(toc TOC, opts YuqueUserOpts) (string, error) {
 		return "", err
 	}
 
-	var exportDatas ExportDatas
+	var exportDatas ExportsData
 
 	err = json.Unmarshal(respBody, &exportDatas)
 	if err != nil {

@@ -8,21 +8,15 @@ import (
 
 // 用来处理语雀API的数据
 type HandlerObject struct {
-	UserName string
-	Token    string
 	// 待导出的知识库。可以是仓库的ID，也可以是以斜线分割的用户名和仓库slug的组合
 	Namespace int
-	// 待导出知识库的深度。也就是目录层级
-	TocDepth int
+	Opts      YuqueUserOpts
 }
 
 // 根据命令行标志实例化一个处理器
 func NewHandlerObject(opts YuqueUserOpts) *HandlerObject {
 	return &HandlerObject{
-		UserName:  opts.UserName,
-		Token:     opts.Token,
-		Namespace: 0,
-		TocDepth:  opts.TocDepth,
+		Opts: opts,
 	}
 }
 
@@ -34,7 +28,7 @@ func (h *HandlerObject) GetUserData() (*UserData, error) {
 		"url": url,
 	}).Debug("检查 URL，获取用户数据")
 
-	_, err := HttpHandler("GET", url, h.Token, &user)
+	_, err := HttpHandler("GET", url, h.Opts.Token, &user)
 	if err != nil {
 		return nil, err
 	}
@@ -45,12 +39,12 @@ func (h *HandlerObject) GetUserData() (*UserData, error) {
 // 从语雀的 API 中获取知识库列表
 func (h *HandlerObject) GetReposList() (*ReposList, error) {
 	var repos ReposList
-	url := YuqueBaseAPI + "/users/" + h.UserName + YuqueReposAPI
+	url := YuqueBaseAPI + "/users/" + h.Opts.UserName + YuqueReposAPI
 	logrus.WithFields(logrus.Fields{
 		"url": url,
 	}).Debug("检查 URL，获取知识库列表")
 
-	_, err := HttpHandler("GET", url, h.Token, &repos)
+	_, err := HttpHandler("GET", url, h.Opts.Token, &repos)
 	if err != nil {
 		return nil, err
 	}
@@ -59,14 +53,14 @@ func (h *HandlerObject) GetReposList() (*ReposList, error) {
 }
 
 // 从语雀的 API 中获取知识库内的文档列表
-func (h *HandlerObject) GetTocsList() (*TocsData, error) {
-	var toc TocsData
+func (h *HandlerObject) GetTocsList() (*TocsList, error) {
+	var toc TocsList
 	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/toc"
 	logrus.WithFields(logrus.Fields{
 		"url": url,
 	}).Debug("检查 URL，获取 TOC 数据")
 
-	_, err := HttpHandler("GET", url, h.Token, &toc)
+	_, err := HttpHandler("GET", url, h.Opts.Token, &toc)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +85,7 @@ func (h *HandlerObject) DiscoveredTocs() ([]TOC, error) {
 	logrus.Infof("当前知识库共有 %v 个节点", len(tocs.Data))
 
 	for i := 0; i < len(tocs.Data); i++ {
-		if tocs.Data[i].Depth == h.TocDepth {
+		if tocs.Data[i].Depth == h.Opts.TocDepth {
 			discoveredTOCs = append(discoveredTOCs, tocs.Data[i])
 		}
 	}

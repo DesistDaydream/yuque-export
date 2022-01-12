@@ -8,15 +8,39 @@ var (
 	YuqueUserAPI  = "/user/"
 )
 
-type ExportDatas struct {
-	Data ExportData `json:"data"`
+type ExportsData struct {
+	Data Export `json:"data"`
 }
 
-type ExportData struct {
+type Export struct {
 	State string `json:"state"`
 	URL   string `json:"url"`
 }
 
+// 用户数据
+type UserData struct {
+	Data User `json:"data"`
+}
+
+type User struct {
+	ID             int       `json:"id"`
+	Type           string    `json:"type"`
+	Login          string    `json:"login"`
+	Name           string    `json:"name"`
+	Description    string    `json:"description"`
+	AvatarURL      string    `json:"avatar_url"`
+	FollowersCount int       `json:"followers_count"`
+	FollowingCount int       `json:"following_count"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	Serializer     string    `json:"_serializer"`
+}
+
+func (u *UserData) Get() {
+
+}
+
+// 知识库列表
 type ReposList struct {
 	Data []Repo `json:"data"`
 }
@@ -45,30 +69,8 @@ func (r *ReposList) Get() {
 
 }
 
-type UserData struct {
-	Data User `json:"data"`
-}
-
-type User struct {
-	ID             int       `json:"id"`
-	Type           string    `json:"type"`
-	Login          string    `json:"login"`
-	Name           string    `json:"name"`
-	Description    string    `json:"description"`
-	AvatarURL      string    `json:"avatar_url"`
-	FollowersCount int       `json:"followers_count"`
-	FollowingCount int       `json:"following_count"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	Serializer     string    `json:"_serializer"`
-}
-
-func (u *UserData) Get() {
-
-}
-
-// TOCs 节点信息。
-type TocsData struct {
+// TOCs 节点列表。
+type TocsList struct {
 	Data []TOC `json:"data"`
 }
 
@@ -105,6 +107,6 @@ type TOC struct {
 	Slug string `json:"slug"`
 }
 
-func (t *TocsData) Get() {
+func (t *TocsList) Get() {
 
 }

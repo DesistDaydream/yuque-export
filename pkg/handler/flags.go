@@ -9,6 +9,7 @@ type YuqueUserOpts struct {
 	Cookie   string
 	Referer  string
 	Token    string
+	// 待导出知识库的深度。也就是目录层级
 	TocDepth int
 	IsExport bool
 }

@@ -103,5 +103,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	export.Run(*opts, discoveredTOCs)
+	export.Run(*h, discoveredTOCs)
 }

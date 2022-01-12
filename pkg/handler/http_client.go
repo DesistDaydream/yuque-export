@@ -12,7 +12,7 @@ type YuqueData interface {
 }
 
 // 处理语雀 API 是要使用的 HTTP 处理器
-func HttpHandler(method, url, token string, data YuqueData) (interface{}, error) {
+func HttpHandler(method, url, token string, data interface{}) (interface{}, error) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest(method, url, nil)
