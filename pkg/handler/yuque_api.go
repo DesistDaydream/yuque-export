@@ -41,6 +41,10 @@ type Repo struct {
 	Serializer       string    `json:"_serializer"`
 }
 
+func (r *ReposList) Get() {
+
+}
+
 type UserData struct {
 	Data User `json:"data"`
 }
@@ -57,6 +61,10 @@ type User struct {
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	Serializer     string    `json:"_serializer"`
+}
+
+func (u *UserData) Get() {
+
 }
 
 // TOCs 节点信息。
@@ -95,4 +103,8 @@ type TOC struct {
 	Depth   int `json:"depth"`
 	// 节点 URL 的 slug
 	Slug string `json:"slug"`
+}
+
+func (t *TocsData) Get() {
+
 }

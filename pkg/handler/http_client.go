@@ -6,7 +6,12 @@ import (
 	"net/http"
 )
 
-func HttpHandler(method, url, token string, data interface{}) (interface{}, error) {
+// 是否有必要抽象出来这层接口？
+type YuqueData interface {
+	Get()
+}
+
+func HttpHandler(method, url, token string, data YuqueData) (interface{}, error) {
 	client := &http.Client{}
 
 	req, err := http.NewRequest(method, url, nil)
