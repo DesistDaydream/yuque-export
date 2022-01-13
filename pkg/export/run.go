@@ -27,8 +27,7 @@ func Run(h *handler.HandlerObject) {
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,
-					"toc": tocsInfo,
-					"url": exportURL,
+					"toc": tocsInfo.Title,
 				}).Error("获取待导出 TOC 的 URL 失败!")
 			}
 
