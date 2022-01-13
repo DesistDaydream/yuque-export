@@ -65,33 +65,29 @@ func (t *TocsList) Get(h *handler.HandlerObject) error {
 }
 
 func (t *TocsList) Handle(h *handler.HandlerObject) error {
-	panic("not implemented") // TODO: Implement
-}
-
-// 根据用户设定，筛选出需要导出的文档
-func (t *TocsList) DiscoveredTocs(h *handler.HandlerObject) ([]TOC, error) {
-	var (
-		discoveredTOCs []TOC // 已发现节点
-	)
-
+	// 根据用户设定，筛选出需要导出的文档
 	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
-
+	j := 0
 	for i := 0; i < len(t.Data); i++ {
 		if t.Data[i].Depth == h.Opts.TocDepth {
-			discoveredTOCs = append(discoveredTOCs, t.Data[i])
+			h.DiscoveredTocsList = append(h.DiscoveredTocsList, handler.Toc{})
+			h.DiscoveredTocsList[j].Title = t.Data[i].Title
+			h.DiscoveredTocsList[j].URL = t.Data[i].URL
+			h.DiscoveredTocsList[j].UUID = t.Data[i].UUID
+			j++
 		}
 	}
 
 	// 输出一些 Debug 信息
-	logrus.Infof("已发现 %v 个节点", len(discoveredTOCs))
+	logrus.Infof("已发现 %v 个节点", len(h.DiscoveredTocsList))
 
-	for _, discoveredTOC := range discoveredTOCs {
+	for _, toc := range h.DiscoveredTocsList {
 		logrus.WithFields(logrus.Fields{
-			"title":         discoveredTOC.Title,
-			"toc_node_uuid": discoveredTOC.UUID,
-			"toc_node_url":  discoveredTOC.URL,
-		}).Debug("显示已发现的节点信息")
+			"title":         toc.Title,
+			"toc_node_uuid": toc.UUID,
+			"toc_node_url":  toc.URL,
+		}).Debug("显示已发现 TOC 的信息")
 	}
 
-	return discoveredTOCs, nil
+	return nil
 }

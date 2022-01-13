@@ -15,9 +15,15 @@ type HandlerObject struct {
 	// 待导出的知识库。可以是仓库的ID，也可以是以斜线分割的用户名和仓库slug的组合
 	Namespace int
 	// 已发现待导出的 TOCs 的 title
-	DiscoveredTocsTitle []string
+	DiscoveredTocsList []Toc
 	// 命令行选项
 	Opts YuqueUserOpts
+}
+
+type Toc struct {
+	Title string
+	UUID  string
+	URL   string
 }
 
 // 根据命令行标志实例化一个处理器

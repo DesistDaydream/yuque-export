@@ -113,12 +113,12 @@ func main() {
 		panic(err)
 	}
 
-	// 发现需要导出的文档
-	discoveredTOCs, err := tocsList.DiscoveredTocs(h)
+	// 处理文档列表，这里暂时是有一个逻辑，就是发现需要导出的文档
+	err = tocsList.Handle(h)
 	if err != nil {
 		panic(err)
 	}
 
 	// 导出文档
-	export.Run(*h, discoveredTOCs)
+	export.Run(h)
 }

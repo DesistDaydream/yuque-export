@@ -22,7 +22,7 @@ type ReqBodyForExportToc struct {
 }
 
 // GetURLForExportToc 获取待导出 TOC 的 URL
-func GetURLForExportToc(h handler.HandlerObject, toc TOC) (string, error) {
+func GetURLForExportToc(h *handler.HandlerObject, toc handler.Toc) (string, error) {
 	url := "https://www.yuque.com/api/books/" + fmt.Sprint(h.Namespace) + "/export"
 	method := "POST"
 
@@ -83,7 +83,11 @@ func GetURLForExportToc(h handler.HandlerObject, toc TOC) (string, error) {
 	}
 
 	if resp.StatusCode == 200 {
-		logrus.WithFields(logrus.Fields{"toc": toc.Title, "status": resp.Status, "url": exportDatas.Data.URL}).Infof("获取待导出 TOC 的 URL 成功!")
+		logrus.WithFields(logrus.Fields{
+			"toc":    toc.Title,
+			"status": resp.Status,
+			"url":    exportDatas.Data.URL,
+		}).Infof("获取待导出 TOC 的 URL 成功!")
 	} else {
 		return "", fmt.Errorf(resp.Status)
 	}
