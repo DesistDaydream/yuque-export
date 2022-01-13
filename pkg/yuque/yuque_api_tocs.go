@@ -50,7 +50,7 @@ func NewTocsList() *TocsList {
 }
 
 // 从语雀的 API 中获取知识库内的文档列表
-func (t *TocsList) Get(h *handler.HandlerObject) error {
+func (t *TocsList) Get(h *handler.HandlerObject, opts ...interface{}) error {
 	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/toc"
 	logrus.WithFields(logrus.Fields{
 		"url": url,
@@ -90,4 +90,12 @@ func (t *TocsList) Handle(h *handler.HandlerObject) error {
 	}
 
 	return nil
+}
+
+func (t *TocsList) GetTocsSlug(h *handler.HandlerObject) {
+	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
+
+	for _, toc := range t.Data {
+		h.DocsSlug = append(h.DocsSlug, toc.Slug)
+	}
 }

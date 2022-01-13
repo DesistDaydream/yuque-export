@@ -37,7 +37,7 @@ func NewReposList() *ReposList {
 }
 
 // 从语雀的 API 中获取知识库列表
-func (r *ReposList) Get(h *handler.HandlerObject) error {
+func (r *ReposList) Get(h *handler.HandlerObject, opts ...interface{}) error {
 	url := YuqueBaseAPI + "/users/" + h.UserName + "/repos"
 	logrus.WithFields(logrus.Fields{
 		"url": url,

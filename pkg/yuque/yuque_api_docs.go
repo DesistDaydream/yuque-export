@@ -9,7 +9,7 @@ import (
 )
 
 type DocsList struct {
-	Data []Data `json:"data"`
+	Data []Doc `json:"data"`
 }
 type LastEditor struct {
 	ID             int       `json:"id"`
@@ -24,7 +24,7 @@ type LastEditor struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 	Serializer     string    `json:"_serializer"`
 }
-type Data struct {
+type Doc struct {
 	ID                int         `json:"id"`
 	Slug              string      `json:"slug"`
 	Title             string      `json:"title"`
@@ -57,7 +57,7 @@ func NewDocsList() *DocsList {
 	return &DocsList{}
 }
 
-func (d *DocsList) Get(h *handler.HandlerObject) error {
+func (d *DocsList) Get(h *handler.HandlerObject, opts ...interface{}) error {
 	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/docs"
 	logrus.WithFields(logrus.Fields{
 		"url": url,
@@ -71,5 +71,9 @@ func (d *DocsList) Get(h *handler.HandlerObject) error {
 	return nil
 }
 func (d *DocsList) Handle(h *handler.HandlerObject) error {
-	panic("not implemented") // TODO: Implement
+	logrus.Infof("当前知识库共有 %v 篇文档", len(d.Data))
+	for _, doc := range d.Data {
+		h.DocsSlug = append(h.DocsSlug, doc.Slug)
+	}
+	return nil
 }

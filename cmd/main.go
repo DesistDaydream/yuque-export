@@ -64,6 +64,49 @@ func LogInit(level, file, format string) error {
 	return nil
 }
 
+// 导出文档集合
+func set(h *handler.HandlerObject) {
+	// 获取 Toc 列表
+	tocsList := yuque.NewTocsList()
+	err := tocsList.Get(h)
+	if err != nil {
+		panic(err)
+	}
+
+	// 处理 Toc 列表，这里暂时是有一个逻辑，就是发现需要导出的文档
+	err = tocsList.Handle(h)
+	if err != nil {
+		panic(err)
+	}
+
+	// 导出多个文档集合
+	export.RunSet(h)
+}
+
+// 导出单篇文档
+func one(h *handler.HandlerObject) {
+	// 获取 Docs 列表
+	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
+	// docsList := yuque.NewDocsList()
+	// err := docsList.Get(h)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// docsList.Handle(h)
+
+	// 获取 Toc 列表
+	tocsList := yuque.NewTocsList()
+	err := tocsList.Get(h)
+	if err != nil {
+		panic(err)
+	}
+	tocsList.GetTocsSlug(h)
+	logrus.Debug("DocSlug 列表:", h.DocsSlug)
+
+	// 导出多个单篇文档
+	export.RunOne(h)
+}
+
 func main() {
 	// 设置命令行标志
 	flags := &yuqueExportFlags{}
@@ -106,27 +149,13 @@ func main() {
 		}
 	}
 
-	// 获取 Toc 列表
-	tocsList := yuque.NewTocsList()
-	err = tocsList.Get(h)
-	if err != nil {
-		panic(err)
+	switch opts.ExportMethod {
+	case "set":
+		set(h)
+	case "one":
+		one(h)
+	default:
+		panic("请指定导出方式")
 	}
 
-	// 处理 Toc 列表，这里暂时是有一个逻辑，就是发现需要导出的文档
-	err = tocsList.Handle(h)
-	if err != nil {
-		panic(err)
-	}
-
-	// // 获取 Docs 列表
-	// docsList := yuque.NewDocsList()
-	// docsList.Get(h)
-
-	// // 获取 Doc 详情
-	// docDetail := yuque.NewDocDetail()
-	// docDetail.Get(h)
-
-	// 导出文档
-	export.Run(h)
 }

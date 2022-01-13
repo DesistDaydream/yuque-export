@@ -2,16 +2,20 @@ package yuque
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
+
+	md "github.com/JohannesKaufmann/html-to-markdown"
 )
 
-type DocDetail struct {
+type DocDetailData struct {
 	Abilities Abilities `json:"abilities"`
-	Data      DocData   `json:"data"`
+	Data      DocDetail `json:"data"`
 }
+
 type Abilities struct {
 	Update  bool `json:"update"`
 	Destroy bool `json:"destroy"`
@@ -37,6 +41,7 @@ type Book struct {
 	User       User   `json:"user"`
 	Serializer string `json:"_serializer"`
 }
+
 type Creator struct {
 	ID               int       `json:"id"`
 	Type             string    `json:"type"`
@@ -52,7 +57,8 @@ type Creator struct {
 	UpdatedAt        time.Time `json:"updated_at"`
 	Serializer       string    `json:"_serializer"`
 }
-type DocData struct {
+
+type DocDetail struct {
 	ID                int         `json:"id"`
 	Slug              string      `json:"slug"`
 	Title             string      `json:"title"`
@@ -86,15 +92,25 @@ type DocData struct {
 	Serializer        string      `json:"_serializer"`
 }
 
-func NewDocDetail() *DocDetail {
-	return &DocDetail{}
+func NewDocDetail() *DocDetailData {
+	return &DocDetailData{}
 }
 
-func (dd *DocDetail) Get(h *handler.HandlerObject) error {
-	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/docs" + h.DocsSlug[0]
+func (dd *DocDetailData) Get(h *handler.HandlerObject, opts ...interface{}) error {
+	var doc string
+
+	for _, opt := range opts {
+		if docDetail, ok := opt.(string); ok {
+			doc = docDetail
+		}
+	}
+
+	// 获取文档详情 URL
+	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/docs/" + doc
+
 	logrus.WithFields(logrus.Fields{
 		"url": url,
-	}).Debugf("检查 URL，获取%v仓库的文档列表", h.Opts.RepoName)
+	}).Debugf("检查 URL，获取 %v 仓库中,文档 %v 的详情", h.Opts.RepoName, doc)
 
 	err := h.HttpHandler("GET", url, dd)
 	if err != nil {
@@ -104,6 +120,25 @@ func (dd *DocDetail) Get(h *handler.HandlerObject) error {
 	return nil
 }
 
-func (dd *DocDetail) Handle(h *handler.HandlerObject) error {
-	panic("not implemented") // TODO: Implement
+func (dd *DocDetailData) Handle(h *handler.HandlerObject) error {
+	mark, err := convertHTML2Markdown(dd.Data.BodyHTML)
+	if err != nil {
+		return err
+	}
+
+	b := []byte(mark)
+	fileName := "./files/" + dd.Data.Slug + ".md"
+	os.WriteFile(fileName, b, 0666)
+
+	return nil
+}
+
+func convertHTML2Markdown(html string) (string, error) {
+	converter := md.NewConverter("", true, nil)
+	md, err := converter.ConvertString(html)
+	if err != nil {
+		logrus.Error(err)
+		return "", err
+	}
+	return md, nil
 }

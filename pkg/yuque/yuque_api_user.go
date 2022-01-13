@@ -32,7 +32,7 @@ func NewUserData() *UserData {
 }
 
 // 从语雀的 API 中获取用户数据
-func (u *UserData) Get(h *handler.HandlerObject) error {
+func (u *UserData) Get(h *handler.HandlerObject, opts ...interface{}) error {
 	url := YuqueBaseAPI + "/user"
 	logrus.WithFields(logrus.Fields{
 		"url": url,
