@@ -127,7 +127,7 @@ func (dd *DocDetailData) Handle(h *handler.HandlerObject) error {
 	}
 
 	b := []byte(mark)
-	fileName := "./files/" + dd.Data.Slug + ".md"
+	fileName := "./files/" + dd.Data.Title + ".md"
 	os.WriteFile(fileName, b, 0666)
 
 	return nil
