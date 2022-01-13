@@ -62,7 +62,7 @@ func RunOne(h *handler.HandlerObject) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	concurrenceControl := make(chan bool, 5)
+	concurrenceControl := make(chan bool, 1)
 
 	for _, docSlug := range h.DocsSlug {
 		concurrenceControl <- true
