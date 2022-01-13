@@ -1,6 +1,6 @@
 # 概述
 > 参考：
-> - https://github.com/wujiyu115/yuqueg(后续优化代码时受该项目启发)
+> - https://github.com/wujiyu115/yuqueg (后续优化代码时受该项目启发)
 
 由于语雀的导出限制，当知识库内文章过多时，将会导出失败，所以写个小工具，逐一导出
 

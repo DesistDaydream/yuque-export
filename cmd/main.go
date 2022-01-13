@@ -106,18 +106,26 @@ func main() {
 		}
 	}
 
-	// 获取文档列表
+	// 获取 Toc 列表
 	tocsList := yuque.NewTocsList()
 	err = tocsList.Get(h)
 	if err != nil {
 		panic(err)
 	}
 
-	// 处理文档列表，这里暂时是有一个逻辑，就是发现需要导出的文档
+	// 处理 Toc 列表，这里暂时是有一个逻辑，就是发现需要导出的文档
 	err = tocsList.Handle(h)
 	if err != nil {
 		panic(err)
 	}
+
+	// // 获取 Docs 列表
+	// docsList := yuque.NewDocsList()
+	// docsList.Get(h)
+
+	// // 获取 Doc 详情
+	// docDetail := yuque.NewDocDetail()
+	// docDetail.Get(h)
 
 	// 导出文档
 	export.Run(h)

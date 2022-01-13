@@ -16,6 +16,8 @@ type HandlerObject struct {
 	Namespace int
 	// 已发现待导出的 TOCs 的 title
 	DiscoveredTocsList []Toc
+	// 文档的 slug 列表
+	DocsSlug []string
 	// 命令行选项
 	Opts YuqueUserOpts
 }
