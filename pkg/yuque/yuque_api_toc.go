@@ -86,7 +86,6 @@ func (t *TocsList) DiscoveredTocs(h *handler.HandlerObject) ([]TOC, error) {
 	logrus.Infof("已发现 %v 个节点", len(discoveredTOCs))
 
 	for _, discoveredTOC := range discoveredTOCs {
-		// logrus.WithFields(logrus.Fields{"toc": discoveredTOC.Title}).Debugf("显示已发现的节点")
 		logrus.WithFields(logrus.Fields{
 			"title":         discoveredTOC.Title,
 			"toc_node_uuid": discoveredTOC.UUID,
