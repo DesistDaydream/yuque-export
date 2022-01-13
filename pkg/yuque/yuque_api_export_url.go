@@ -1,4 +1,4 @@
-package handler
+package yuque
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,7 +22,7 @@ type ReqBodyForExportToc struct {
 }
 
 // GetURLForExportToc 获取待导出 TOC 的 URL
-func GetURLForExportToc(h HandlerObject, toc TOC) (string, error) {
+func GetURLForExportToc(h handler.HandlerObject, toc TOC) (string, error) {
 	url := "https://www.yuque.com/api/books/" + fmt.Sprint(h.Namespace) + "/export"
 	method := "POST"
 

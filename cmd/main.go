@@ -6,6 +6,7 @@ import (
 
 	"github.com/DesistDaydream/yuque-export/pkg/export"
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
+	"github.com/DesistDaydream/yuque-export/pkg/yuque"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -79,7 +80,7 @@ func main() {
 	h := handler.NewHandlerObject(*opts)
 
 	// 获取用户信息
-	userData := handler.NewUserData()
+	userData := yuque.NewUserData()
 	err := userData.Get(h)
 	// userData, err := h.GetUserData()
 	if err != nil {
@@ -89,7 +90,7 @@ func main() {
 	logrus.Debug(userData)
 
 	// 获取知识库列表
-	reposList := handler.NewReposList()
+	reposList := yuque.NewReposList()
 	err = reposList.Get(h)
 	if err != nil {
 		panic(err)
@@ -103,7 +104,7 @@ func main() {
 	}
 
 	// 获取文档列表
-	tocsList := handler.NewTocsList()
+	tocsList := yuque.NewTocsList()
 	err = tocsList.Get(h)
 	if err != nil {
 		panic(err)

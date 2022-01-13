@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
+	"github.com/DesistDaydream/yuque-export/pkg/yuque"
 	"github.com/sirupsen/logrus"
 )
 
-func Run(h handler.HandlerObject, discoveredTOCs []handler.TOC) {
+func Run(h handler.HandlerObject, discoveredTOCs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -19,10 +20,10 @@ func Run(h handler.HandlerObject, discoveredTOCs []handler.TOC) {
 		concurrenceControl <- true
 		wg.Add(1)
 
-		go func(discoveredTOC handler.TOC) {
+		go func(discoveredTOC yuque.TOC) {
 			defer wg.Done()
 			// 获取待导出笔记的 URL
-			exportURL, err := handler.GetURLForExportToc(h, discoveredTOC)
+			exportURL, err := yuque.GetURLForExportToc(h, discoveredTOC)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,

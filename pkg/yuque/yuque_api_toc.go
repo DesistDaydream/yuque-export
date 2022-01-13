@@ -1,8 +1,9 @@
-package handler
+package yuque
 
 import (
 	"fmt"
 
+	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
 )
 
@@ -49,13 +50,13 @@ func NewTocsList() *TocsList {
 }
 
 // 从语雀的 API 中获取知识库内的文档列表
-func (t *TocsList) Get(handler *HandlerObject) error {
-	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(handler.Namespace) + "/toc"
+func (t *TocsList) Get(h *handler.HandlerObject) error {
+	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/toc"
 	logrus.WithFields(logrus.Fields{
 		"url": url,
 	}).Debug("检查 URL，获取 TOC 数据")
 
-	err := HttpHandler("GET", url, handler.Opts.Token, t)
+	err := h.HttpHandler("GET", url, t)
 	if err != nil {
 		return err
 	}
@@ -64,7 +65,7 @@ func (t *TocsList) Get(handler *HandlerObject) error {
 }
 
 // 根据用户设定，筛选出需要导出的文档
-func (t *TocsList) DiscoveredTocs(h *HandlerObject) ([]TOC, error) {
+func (t *TocsList) DiscoveredTocs(h *handler.HandlerObject) ([]TOC, error) {
 	var (
 		discoveredTOCs []TOC // 已发现节点
 	)
