@@ -44,6 +44,6 @@ func Run(h handler.HandlerObject, discoveredTOCs []handler.TOC) {
 		}(discoveredTOC)
 
 		// 介语雀不让并发太多啊。。。。。接口请求多了。。。直接限流了。。。囧
-		time.Sleep(15 * time.Second)
+		time.Sleep(time.Duration(h.Opts.ExportDuration) * time.Second)
 	}
 }

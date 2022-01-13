@@ -79,7 +79,9 @@ func main() {
 	h := handler.NewHandlerObject(*opts)
 
 	// 获取用户信息
-	userData, err := h.GetUserData()
+	userData := handler.NewUserData()
+	err := userData.Get(h)
+	// userData, err := h.GetUserData()
 	if err != nil {
 		panic(err)
 	}
@@ -87,21 +89,32 @@ func main() {
 	logrus.Debug(userData)
 
 	// 获取知识库列表
-	reposList, err := h.GetReposList()
+	reposList := handler.NewReposList()
+	err = reposList.Get(h)
 	if err != nil {
 		panic(err)
 	}
 
+	// 获取需要导出的知识库 ID
 	for _, repo := range reposList.Data {
 		if repo.Name == opts.RepoName {
 			h.Namespace = repo.ID
 		}
 	}
 
-	// 发现需要导出的文档
-	discoveredTOCs, err := h.DiscoveredTocs()
+	// 获取文档列表
+	tocsList := handler.NewTocsList()
+	err = tocsList.Get(h)
 	if err != nil {
 		panic(err)
 	}
+
+	// 发现需要导出的文档
+	discoveredTOCs, err := tocsList.DiscoveredTocs(h)
+	if err != nil {
+		panic(err)
+	}
+
+	// 导出文档
 	export.Run(*h, discoveredTOCs)
 }
