@@ -38,7 +38,7 @@ func NewReposList() *ReposList {
 
 // 从语雀的 API 中获取知识库列表
 func (r *ReposList) Get(h *handler.HandlerObject) error {
-	url := YuqueBaseAPI + "/users/" + h.Opts.UserName + "/repos"
+	url := YuqueBaseAPI + "/users/" + h.UserName + "/repos"
 	logrus.WithFields(logrus.Fields{
 		"url": url,
 	}).Debug("检查 URL，获取知识库列表")
@@ -49,4 +49,8 @@ func (r *ReposList) Get(h *handler.HandlerObject) error {
 	}
 
 	return nil
+}
+
+func (r *ReposList) Handle(h *handler.HandlerObject) error {
+	panic("not implemented") // TODO: Implement
 }

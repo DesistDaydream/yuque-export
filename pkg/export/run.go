@@ -45,6 +45,7 @@ func Run(h handler.HandlerObject, discoveredTOCs []yuque.TOC) {
 		}(discoveredTOC)
 
 		// 介语雀不让并发太多啊。。。。。接口请求多了。。。直接限流了。。。囧
+		// 其实主要是对 GetURlForExportToc 中的接口限流，防止请求过多，导致服务器处理很多压缩任务
 		time.Sleep(time.Duration(h.Opts.ExportDuration) * time.Second)
 	}
 }

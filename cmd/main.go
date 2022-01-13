@@ -82,12 +82,15 @@ func main() {
 	// 获取用户信息
 	userData := yuque.NewUserData()
 	err := userData.Get(h)
-	// userData, err := h.GetUserData()
 	if err != nil {
 		panic(err)
 	}
 
-	logrus.Debug(userData)
+	// 处理用户数据
+	err = userData.Handle(h)
+	if err != nil {
+		panic(err)
+	}
 
 	// 获取知识库列表
 	reposList := yuque.NewReposList()

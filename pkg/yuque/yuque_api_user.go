@@ -43,7 +43,11 @@ func (u *UserData) Get(h *handler.HandlerObject) error {
 		return err
 	}
 
-	h.Opts.UserName = u.Data.Name
+	return nil
+}
 
+func (u *UserData) Handle(h *handler.HandlerObject) error {
+	// 将获取用户名称赋值给 handler 中的 UserName
+	h.UserName = u.Data.Name
 	return nil
 }

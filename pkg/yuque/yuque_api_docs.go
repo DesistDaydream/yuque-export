@@ -70,3 +70,6 @@ func (d *DocsList) Get(h *handler.HandlerObject) error {
 
 	return nil
 }
+func (d *DocsList) Handle(h *handler.HandlerObject) error {
+	panic("not implemented") // TODO: Implement
+}

@@ -64,6 +64,10 @@ func (t *TocsList) Get(h *handler.HandlerObject) error {
 	return nil
 }
 
+func (t *TocsList) Handle(h *handler.HandlerObject) error {
+	panic("not implemented") // TODO: Implement
+}
+
 // 根据用户设定，筛选出需要导出的文档
 func (t *TocsList) DiscoveredTocs(h *handler.HandlerObject) ([]TOC, error) {
 	var (
