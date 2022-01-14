@@ -1,8 +1,6 @@
 package yuque
 
 import (
-	"fmt"
-
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
 )
@@ -11,13 +9,11 @@ func NewDocsList() *DocsList {
 	return &DocsList{}
 }
 
-func (d *DocsList) Get(h *handler.HandlerObject, opts ...interface{}) error {
-	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/docs"
-	logrus.WithFields(logrus.Fields{
-		"url": url,
-	}).Debugf("检查 URL，获取%v仓库的文档列表", h.Opts.RepoName)
+func (d *DocsList) Get(h *handler.HandlerObject, name string) error {
+	endpoint := "/repos/" + name + "/docs"
 
-	err := h.HttpHandler("GET", url, d)
+	yc := handler.NewYuqueClient(h.Opts)
+	err := yc.Request("GET", endpoint, d)
 	if err != nil {
 		return err
 	}

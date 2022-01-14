@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func RunSet(h *handler.HandlerObject) {
+func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -17,27 +17,27 @@ func RunSet(h *handler.HandlerObject) {
 	concurrenceControl := make(chan bool, 1)
 
 	// 逐一导出节点内容
-	for _, tocsInfo := range h.DiscoveredTocsList {
+	for _, toc := range tocs {
 		// 介语雀不让并发太多啊
 		concurrenceControl <- true
 
 		wg.Add(1)
 
-		go func(tocsInfo handler.Toc) {
+		go func(toc yuque.TOC) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
-			exportURL, err := yuque.GetURLForExportToc(h, tocsInfo)
+			exportURL, err := yuque.GetURLForExportToc(h, toc)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,
-					"toc": tocsInfo.Title,
+					"toc": toc.Title,
 				}).Error("获取待导出 TOC 的 URL 失败!")
 			}
 
 			// 开始导出笔记
 			if h.Opts.IsExport {
-				err = ExportDoc(exportURL, tocsInfo.Title)
+				err = ExportDoc(exportURL, toc.Title)
 				if err != nil {
 					logrus.WithFields(logrus.Fields{
 						"err": err,
@@ -47,7 +47,7 @@ func RunSet(h *handler.HandlerObject) {
 
 			// 介语雀不让并发太多啊
 			<-concurrenceControl
-		}(tocsInfo)
+		}(toc)
 
 		// 介语雀不让并发太多啊。。。。。接口请求多了。。。直接限流了。。。囧
 		// 其实主要是对 GetURlForExportToc 中的接口限流，防止请求过多，导致服务器处理很多压缩任务
@@ -69,16 +69,21 @@ func RunOne(h *handler.HandlerObject) {
 
 		wg.Add(1)
 
-		go func(docSlug string) {
+		slug := docSlug
+
+		go func(slug string) {
 			defer wg.Done()
 
-			// 获取笔记详情
-			docDetail.Get(h, docSlug)
+			// 获取笔记的 md 格式信息
+			body, name, err := docDetail.GetDocDetailHTMLBody(h, slug)
+			if err != nil {
+				panic(err)
+			}
 
 			// 导出笔记
-			docDetail.Handle(h)
+			ExportMd(body, name)
 
 			<-concurrenceControl
-		}(docSlug)
+		}(slug)
 	}
 }

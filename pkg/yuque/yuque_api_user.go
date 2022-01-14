@@ -2,7 +2,6 @@ package yuque
 
 import (
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
-	"github.com/sirupsen/logrus"
 )
 
 // 实例化语雀的用户数据
@@ -11,13 +10,11 @@ func NewUserData() *UserData {
 }
 
 // 从语雀的 API 中获取用户数据
-func (u *UserData) Get(h *handler.HandlerObject, opts ...interface{}) error {
-	url := YuqueBaseAPI + "/user"
-	logrus.WithFields(logrus.Fields{
-		"url": url,
-	}).Debug("检查 URL，获取用户数据")
+func (u *UserData) Get(h *handler.HandlerObject, name string) error {
+	endpoint := "/user"
 
-	err := h.HttpHandler("GET", url, u)
+	yc := handler.NewYuqueClient(h.Opts)
+	err := yc.Request("GET", endpoint, u)
 	if err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ type ReqBodyForExportToc struct {
 }
 
 // GetURLForExportToc 获取待导出 TOC 的 URL
-func GetURLForExportToc(h *handler.HandlerObject, toc handler.Toc) (string, error) {
+func GetURLForExportToc(h *handler.HandlerObject, toc TOC) (string, error) {
 	url := "https://www.yuque.com/api/books/" + fmt.Sprint(h.Namespace) + "/export"
 	method := "POST"
 

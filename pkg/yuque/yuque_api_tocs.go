@@ -12,13 +12,12 @@ func NewTocsList() *TocsList {
 }
 
 // 从语雀的 API 中获取知识库内的文档列表
-func (t *TocsList) Get(h *handler.HandlerObject, opts ...interface{}) error {
-	url := YuqueBaseAPI + "/repos/" + fmt.Sprint(h.Namespace) + "/toc"
-	logrus.WithFields(logrus.Fields{
-		"url": url,
-	}).Debug("检查 URL，获取 TOC 数据")
+func (t *TocsList) Get(h *handler.HandlerObject, name string) error {
+	fmt.Println(name)
+	endpoint := "/repos/" + h.Namespace + "/toc"
 
-	err := h.HttpHandler("GET", url, t)
+	yc := handler.NewYuqueClient(h.Opts)
+	err := yc.Request("GET", endpoint, t)
 	if err != nil {
 		return err
 	}
@@ -27,31 +26,21 @@ func (t *TocsList) Get(h *handler.HandlerObject, opts ...interface{}) error {
 }
 
 func (t *TocsList) Handle(h *handler.HandlerObject) error {
+	return nil
+}
+
+func (t *TocsList) DiscoverTocs(h *handler.HandlerObject) []TOC {
+	var discoveredTocs []TOC
 	// 根据用户设定，筛选出需要导出的文档
 	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
-	j := 0
-	for i := 0; i < len(t.Data); i++ {
-		if t.Data[i].Depth == h.Opts.TocDepth {
-			h.DiscoveredTocsList = append(h.DiscoveredTocsList, handler.Toc{})
-			h.DiscoveredTocsList[j].Title = t.Data[i].Title
-			h.DiscoveredTocsList[j].URL = t.Data[i].URL
-			h.DiscoveredTocsList[j].UUID = t.Data[i].UUID
-			j++
+	for _, data := range t.Data {
+		if data.Depth == h.Opts.TocDepth {
+			discoveredTocs = append(discoveredTocs, data)
+
 		}
 	}
 
-	// 输出一些 Debug 信息
-	logrus.Infof("已发现 %v 个节点", len(h.DiscoveredTocsList))
-
-	for _, toc := range h.DiscoveredTocsList {
-		logrus.WithFields(logrus.Fields{
-			"title":         toc.Title,
-			"toc_node_uuid": toc.UUID,
-			"toc_node_url":  toc.URL,
-		}).Debug("显示已发现 TOC 的信息")
-	}
-
-	return nil
+	return discoveredTocs
 }
 
 func (t *TocsList) GetTocsSlug(h *handler.HandlerObject) {

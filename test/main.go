@@ -12,7 +12,9 @@ package main
 // }
 
 // type Smalls struct {
-// 	Z []Small
+// 	AA string
+// 	BB string
+// 	Z  []Small
 // }
 
 // type Small struct {
@@ -21,10 +23,10 @@ package main
 // }
 
 // func main() {
-// 	for i, Big := range Bigs {
-// 		if ok{
-// 			Smalls[].A = Bigs[i].A
-// 			Smalls[].D = Bigs[i].D
+// 	for _, big := range Bigs {
+// 		if big == X {
+// 			Smalls.Z[j].A = big.A
+// 			Smalls.Z[j].D = big.D
 // 		}
 // 	}
 // }

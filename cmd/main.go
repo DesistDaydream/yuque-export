@@ -65,26 +65,26 @@ func LogInit(level, file, format string) error {
 }
 
 // 导出文档集合
-func set(h *handler.HandlerObject) {
-	// 获取 Toc 列表
-	tocsList := yuque.NewTocsList()
-	err := tocsList.Get(h)
-	if err != nil {
-		panic(err)
-	}
+func set(h *handler.HandlerObject, tocsList *yuque.TocsList) {
+	// 发现需要导出的文档
+	discoveredTocs := tocsList.DiscoverTocs(h)
+	// 输出一些 Debug 信息
+	logrus.Infof("已发现 %v 个节点", len(discoveredTocs))
 
-	// 处理 Toc 列表，这里暂时是有一个逻辑，就是发现需要导出的文档
-	err = tocsList.Handle(h)
-	if err != nil {
-		panic(err)
+	for _, toc := range discoveredTocs {
+		logrus.WithFields(logrus.Fields{
+			"title":         toc.Title,
+			"toc_node_uuid": toc.UUID,
+			"toc_node_url":  toc.URL,
+		}).Debug("显示已发现 TOC 的信息")
 	}
 
 	// 导出多个文档集合
-	export.RunSet(h)
+	export.RunSet(h, discoveredTocs)
 }
 
 // 导出单篇文档
-func one(h *handler.HandlerObject) {
+func one(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	// 获取 Docs 列表
 	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
 	// docsList := yuque.NewDocsList()
@@ -94,12 +94,6 @@ func one(h *handler.HandlerObject) {
 	// }
 	// docsList.Handle(h)
 
-	// 获取 Toc 列表
-	tocsList := yuque.NewTocsList()
-	err := tocsList.Get(h)
-	if err != nil {
-		panic(err)
-	}
 	tocsList.GetTocsSlug(h)
 	logrus.Debug("DocSlug 列表:", h.DocsSlug)
 
@@ -111,7 +105,7 @@ func main() {
 	// 设置命令行标志
 	flags := &yuqueExportFlags{}
 	flags.AddYuqueExportFlags()
-	opts := &handler.YuqueUserOpts{}
+	opts := &handler.YuqueOpts{}
 	opts.AddFlag()
 	pflag.Parse()
 
@@ -124,7 +118,7 @@ func main() {
 
 	// 获取用户信息
 	userData := yuque.NewUserData()
-	err := userData.Get(h)
+	err := userData.Get(h, "")
 	if err != nil {
 		panic(err)
 	}
@@ -134,23 +128,25 @@ func main() {
 
 	// 获取知识库列表
 	reposList := yuque.NewReposList()
-	err = reposList.Get(h)
+	err = reposList.Get(h, h.UserName)
+	if err != nil {
+		panic(err)
+	}
+	// 获取待导出知识库
+	h.Namespace = reposList.DiscoverTocsList(opts)
+
+	// 获取 Toc 列表
+	tocsList := yuque.NewTocsList()
+	err = tocsList.Get(h, "")
 	if err != nil {
 		panic(err)
 	}
 
-	// 获取需要导出的知识库 ID
-	for _, repo := range reposList.Data {
-		if repo.Name == opts.RepoName {
-			h.Namespace = repo.ID
-		}
-	}
-
 	switch opts.ExportMethod {
 	case "set":
-		set(h)
+		set(h, tocsList)
 	case "one":
-		one(h)
+		one(h, tocsList)
 	default:
 		panic("请指定导出方式")
 	}

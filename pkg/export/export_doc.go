@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/DesistDaydream/yuque-export/pkg/utils/converter"
 )
 
 func ExportDoc(exportURL string, tocName string) error {
@@ -42,6 +44,19 @@ func ExportDoc(exportURL string, tocName string) error {
 	fileName := "./files/" + tocName + ".lakebook"
 
 	os.WriteFile(fileName, body, 0666)
+
+	return nil
+}
+
+func ExportMd(data string, name string) error {
+	mark, err := converter.ConvertHTML2Markdown(data)
+	if err != nil {
+		return err
+	}
+
+	b := []byte(mark)
+	fileName := "./files/" + name + ".md"
+	os.WriteFile(fileName, b, 0666)
 
 	return nil
 }
