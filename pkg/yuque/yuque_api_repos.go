@@ -1,36 +1,9 @@
 package yuque
 
 import (
-	"time"
-
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
 )
-
-// 知识库列表
-type ReposList struct {
-	Data []Repo `json:"data"`
-}
-
-type Repo struct {
-	ID               int       `json:"id"`
-	Type             string    `json:"type"`
-	Slug             string    `json:"slug"`
-	Name             string    `json:"name"`
-	UserID           int       `json:"user_id"`
-	Description      string    `json:"description"`
-	CreatorID        int       `json:"creator_id"`
-	Public           int       `json:"public"`
-	ItemsCount       int       `json:"items_count"`
-	LikesCount       int       `json:"likes_count"`
-	WatchesCount     int       `json:"watches_count"`
-	ContentUpdatedAt time.Time `json:"content_updated_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	CreatedAt        time.Time `json:"created_at"`
-	Namespace        string    `json:"namespace"`
-	User             User      `json:"user"`
-	Serializer       string    `json:"_serializer"`
-}
 
 func NewReposList() *ReposList {
 	return &ReposList{}

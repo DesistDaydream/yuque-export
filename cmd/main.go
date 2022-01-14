@@ -129,11 +129,8 @@ func main() {
 		panic(err)
 	}
 
-	// 处理用户数据
-	err = userData.Handle(h)
-	if err != nil {
-		panic(err)
-	}
+	// 获取用户名称
+	h.UserName = userData.GetUserName()
 
 	// 获取知识库列表
 	reposList := yuque.NewReposList()
