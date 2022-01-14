@@ -27,7 +27,8 @@ func (r *ReposList) Handle(h *handler.HandlerObject) error {
 	panic("not implemented") // TODO: Implement
 }
 
-func (r *ReposList) DiscoverTocsList(opts *handler.YuqueOpts) string {
+// 发现需要导出的知识库
+func (r *ReposList) DiscoverRepos(opts *handler.YuqueOpts) string {
 	for _, repo := range r.Data {
 		if repo.Name == opts.RepoName {
 			return fmt.Sprint(repo.ID)

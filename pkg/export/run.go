@@ -55,33 +55,41 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 	}
 }
 
-func RunOne(h *handler.HandlerObject) {
+func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 	// 获取 Doc 详情
 	docDetail := yuque.NewDocDetail()
 
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	concurrenceControl := make(chan bool, 1)
+	concurrenceControl := make(chan bool, 5)
 
-	for _, docSlug := range h.DocsSlug {
+	for _, toc := range tocs {
 		concurrenceControl <- true
 
 		wg.Add(1)
 
-		slug := docSlug
+		slug := toc.Slug
 
 		go func(slug string) {
 			defer wg.Done()
 
-			// 获取笔记的 md 格式信息
-			body, name, err := docDetail.GetDocDetailHTMLBody(h, slug)
+			// 获取文档的 HTML 格式信息
+			body, name, err := docDetail.GetDocDetailBodyHTML(h, slug)
 			if err != nil {
-				panic(err)
+				logrus.WithFields(logrus.Fields{
+					"err": err,
+					"toc": name,
+				}).Error("获取待导出 DOC 失败!")
 			}
 
 			// 导出笔记
-			ExportMd(body, name)
+			err = ExportMd(body, name)
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"err": err,
+				}).Error("导出 MD 失败!")
+			}
 
 			<-concurrenceControl
 		}(slug)

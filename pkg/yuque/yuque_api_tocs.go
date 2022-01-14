@@ -42,11 +42,3 @@ func (t *TocsList) DiscoverTocs(h *handler.HandlerObject) []TOC {
 
 	return discoveredTocs
 }
-
-func (t *TocsList) GetTocsSlug(h *handler.HandlerObject) {
-	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
-
-	for _, toc := range t.Data {
-		h.DocsSlug = append(h.DocsSlug, toc.Slug)
-	}
-}

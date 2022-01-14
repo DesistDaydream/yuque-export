@@ -19,16 +19,7 @@ func ExportDoc(exportURL string, tocName string) error {
 		return err
 	}
 
-	// req.Header.Add("sec-ch-ua", "<sec-ch-ua>")
-	// req.Header.Add("sec-ch-ua-mobile", "<sec-ch-ua-mobile>")
-	// req.Header.Add("Upgrade-Insecure-Requests", "<Upgrade-Insecure-Requests>")
-	// req.Header.Add("User-Agent", "<User-Agent>")
-	// req.Header.Add("Accept", "<Accept>")
-	// req.Header.Add("Sec-Fetch-Site", "<Sec-Fetch-Site>")
-	// req.Header.Add("Sec-Fetch-Mode", "<Sec-Fetch-Mode>")
-	// req.Header.Add("Sec-Fetch-User", "<Sec-Fetch-User>")
-	// req.Header.Add("Sec-Fetch-Dest", "<Sec-Fetch-Dest>")
-	// req.Header.Add("Accept-Language", "<Accept-Language>")
+	// req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
 	if err != nil {

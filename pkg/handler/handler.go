@@ -18,8 +18,6 @@ type HandlerObject struct {
 	UserName string
 	// 待导出的知识库。可以是仓库的ID，也可以是以斜线分割的用户名和仓库slug的组合
 	Namespace string
-	// 文档的 slug 列表
-	DocsSlug []string
 	// 命令行选项
 	Opts YuqueOpts
 }

@@ -83,8 +83,8 @@ func set(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	export.RunSet(h, discoveredTocs)
 }
 
-// 导出单篇文档
-func one(h *handler.HandlerObject, tocsList *yuque.TocsList) {
+// 导出知识库中每篇文档
+func all(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	// 获取 Docs 列表
 	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
 	// docsList := yuque.NewDocsList()
@@ -94,11 +94,8 @@ func one(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	// }
 	// docsList.Handle(h)
 
-	tocsList.GetTocsSlug(h)
-	logrus.Debug("DocSlug 列表:", h.DocsSlug)
-
-	// 导出多个单篇文档
-	export.RunOne(h)
+	// 导出知识库中每篇文档
+	export.RunOne(h, tocsList.Data)
 }
 
 func main() {
@@ -132,8 +129,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	// 获取待导出知识库
-	h.Namespace = reposList.DiscoverTocsList(opts)
+	h.Namespace = reposList.DiscoverRepos(opts)
 
 	// 获取 Toc 列表
 	tocsList := yuque.NewTocsList()
@@ -145,8 +143,8 @@ func main() {
 	switch opts.ExportMethod {
 	case "set":
 		set(h, tocsList)
-	case "one":
-		one(h, tocsList)
+	case "all":
+		all(h, tocsList)
 	default:
 		panic("请指定导出方式")
 	}

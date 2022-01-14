@@ -18,7 +18,7 @@ type YuqueOpts struct {
 	IsExport bool
 	// 导出方式
 	ExportMethod string
-	// 导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求
+	// 导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求，主要用在导出集合上
 	ExportDuration int64
 	// 关于 http.Client 的选项,HTTP 请求的超时时间
 	Timeout time.Duration
@@ -34,6 +34,6 @@ func (opts *YuqueOpts) AddFlag() {
 	pflag.Int64Var(&opts.ExportDuration, "export-duration", 15, "导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求")
 	pflag.IntVar(&opts.TocDepth, "toc-depth", 2, "知识库的深度，即从哪一级目录开始导出")
 	pflag.BoolVar(&opts.IsExport, "export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
-	pflag.StringVar(&opts.ExportMethod, "method", "set", "导出方式,one of: set|one。set 导出文档集合；one 逐一导出每一篇文档")
+	pflag.StringVar(&opts.ExportMethod, "method", "set", "导出方式,one of: set|all.set 导出文档集合;all 导出每一篇文档")
 	pflag.DurationVar(&opts.Timeout, "time-out", time.Second*60, "Timeout on HTTP requests to the Yuque API.unit:second")
 }
