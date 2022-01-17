@@ -13,8 +13,14 @@
 - cookie 从浏览器的 F12 中获取
 - referer 为当前知识库的 URL
 
+## 导出文档集合
 ```bash
-go run cmd/main.go --log-level=debug --user-token="XXX" --user-cookie="YYY" --referer="ZZZ" --user-name="DesistDaydream" --repo-name="学习知识库" --export=true
+go run cmd/main.go --log-level=debug --user-token="XXX" --user-cookie="YYY" --referer="ZZZ" --repo-name="学习知识库" --export=true
+```
+
+##导出每篇文档
+```bash
+go run cmd/main.go --log-level=debug --user-token="XXX" --repo-name="学习知识库" --export=true
 ```
 
 # TODO

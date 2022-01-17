@@ -14,8 +14,8 @@ func NewReposList() *ReposList {
 func (r *ReposList) Get(h *handler.HandlerObject, name string) error {
 	endpoint := "/users/" + name + "/repos"
 
-	yc := handler.NewYuqueClient(h.Opts)
-	err := yc.Request("GET", endpoint, r)
+	yc := handler.NewYuqueClient(h.Flags)
+	err := yc.RequestV2("GET", endpoint, nil, r)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func (r *ReposList) Handle(h *handler.HandlerObject) error {
 }
 
 // 发现需要导出的知识库
-func (r *ReposList) DiscoverRepos(opts *handler.YuqueOpts) string {
+func (r *ReposList) DiscoverRepos(opts *handler.YuqueHandlerFlags) string {
 	for _, repo := range r.Data {
 		if repo.Name == opts.RepoName {
 			return fmt.Sprint(repo.ID)

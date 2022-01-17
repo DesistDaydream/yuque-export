@@ -15,8 +15,8 @@ func (dd *DocDetailData) Get(h *handler.HandlerObject, name string) error {
 	// 获取文档详情 URL
 	endpoint := "/repos/" + fmt.Sprint(h.Namespace) + "/docs/" + name
 
-	yc := handler.NewYuqueClient(h.Opts)
-	err := yc.Request("GET", endpoint, dd)
+	yc := handler.NewYuqueClient(h.Flags)
+	err := yc.RequestV2("GET", endpoint, nil, dd)
 	if err != nil {
 		return err
 	}

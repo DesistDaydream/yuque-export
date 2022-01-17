@@ -100,18 +100,18 @@ func all(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 
 func main() {
 	// 设置命令行标志
-	flags := &yuqueExportFlags{}
-	flags.AddYuqueExportFlags()
-	opts := &handler.YuqueOpts{}
-	opts.AddFlag()
+	yeFlags := &yuqueExportFlags{}
+	yeFlags.AddYuqueExportFlags()
+	yhFlags := &handler.YuqueHandlerFlags{}
+	yhFlags.AddFlag()
 	pflag.Parse()
 
 	// 初始化日志
-	if err := LogInit(flags.logLevel, flags.logFile, flags.logFormat); err != nil {
+	if err := LogInit(yeFlags.logLevel, yeFlags.logFile, yeFlags.logFormat); err != nil {
 		logrus.Fatal(errors.Wrap(err, "set log level error"))
 	}
 
-	h := handler.NewHandlerObject(*opts)
+	h := handler.NewHandlerObject(*yhFlags)
 
 	// 获取用户信息
 	userData := yuque.NewUserData()
@@ -131,7 +131,7 @@ func main() {
 	}
 
 	// 获取待导出知识库
-	h.Namespace = reposList.DiscoverRepos(opts)
+	h.Namespace = reposList.DiscoverRepos(yhFlags)
 
 	// 获取 Toc 列表
 	tocsList := yuque.NewTocsList()
@@ -140,7 +140,7 @@ func main() {
 		panic(err)
 	}
 
-	switch opts.ExportMethod {
+	switch yhFlags.ExportMethod {
 	case "set":
 		set(h, tocsList)
 	case "all":

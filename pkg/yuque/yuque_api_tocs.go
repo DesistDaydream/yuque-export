@@ -16,8 +16,8 @@ func (t *TocsList) Get(h *handler.HandlerObject, name string) error {
 	fmt.Println(name)
 	endpoint := "/repos/" + h.Namespace + "/toc"
 
-	yc := handler.NewYuqueClient(h.Opts)
-	err := yc.Request("GET", endpoint, t)
+	yc := handler.NewYuqueClient(h.Flags)
+	err := yc.RequestV2("GET", endpoint, nil, t)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (t *TocsList) DiscoverTocs(h *handler.HandlerObject) []TOC {
 	// 根据用户设定，筛选出需要导出的文档
 	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
 	for _, data := range t.Data {
-		if data.Depth == h.Opts.TocDepth {
+		if data.Depth == h.Flags.TocDepth {
 			discoveredTocs = append(discoveredTocs, data)
 
 		}

@@ -6,26 +6,32 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// YuqueOpts 通过命令行标志传递的认证选项
-type YuqueOpts struct {
+// YuqueHandlerFlags 通过命令行标志传递的认证选项
+type YuqueHandlerFlags struct {
 	UserName string
 	RepoName string
 	Cookie   string
 	Referer  string
 	Token    string
-	// 待导出知识库的深度。也就是目录层级
-	TocDepth int
-	IsExport bool
+
 	// 导出方式
 	ExportMethod string
-	// 导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求，主要用在导出集合上
-	ExportDuration int64
-	// 关于 http.Client 的选项,HTTP 请求的超时时间
+
+	// 关于 http.Client 的选项
+	// HTTP 请求的超时时间
 	Timeout time.Duration
+
+	// 专用于导出文档集合的选项
+	// 待导出知识库的深度。也就是目录层级
+	TocDepth int
+	// 是否导出笔记，用来测试
+	IsExport bool
+	// 导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求
+	ExportDuration int64
 }
 
 // AddFlag 用来为语雀用户数据设置一些值
-func (opts *YuqueOpts) AddFlag() {
+func (opts *YuqueHandlerFlags) AddFlag() {
 	pflag.StringVar(&opts.UserName, "user-name", "DesistDaydream", "用户名称")
 	pflag.StringVar(&opts.RepoName, "repo-name", "学习知识库", "待导出知识库名称")
 	pflag.StringVar(&opts.Token, "user-token", "", "用户 Token,在 https://www.yuque.com/settings/tokens/ 创建")

@@ -13,8 +13,8 @@ func NewUserData() *UserData {
 func (u *UserData) Get(h *handler.HandlerObject, name string) error {
 	endpoint := "/user"
 
-	yc := handler.NewYuqueClient(h.Opts)
-	err := yc.Request("GET", endpoint, u)
+	yc := handler.NewYuqueClient(h.Flags)
+	err := yc.RequestV2("GET", endpoint, nil, u)
 	if err != nil {
 		return err
 	}

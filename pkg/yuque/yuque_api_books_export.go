@@ -50,16 +50,9 @@ func GetURLForExportToc(h *handler.HandlerObject, toc TOC) (string, error) {
 
 	req.Header.Add("authority", "www.yuque.com")
 	req.Header.Add("accept", "application/json")
-	// req.Header.Add("x-csrf-token", "3t1WleUAVuVSM5P-82xwT3Bl")
-	// req.Header.Add("x-requested-with", "XMLHttpRequest")
-	// req.Header.Add("sec-ch-ua-mobile", "?0")
 	req.Header.Add("content-type", "application/json")
-	// req.Header.Add("origin", "https://www.yuque.com")
-	// req.Header.Add("sec-fetch-site", "same-origin")
-	// req.Header.Add("sec-fetch-mode", "cors")
-	// req.Header.Add("sec-fetch-dest", "empty")
-	req.Header.Add("referer", h.Opts.Referer)
-	req.Header.Add("cookie", h.Opts.Cookie)
+	req.Header.Add("referer", h.Flags.Referer)
+	req.Header.Add("cookie", h.Flags.Cookie)
 
 	// 建立连接
 	client := &http.Client{}
