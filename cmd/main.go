@@ -81,6 +81,12 @@ func set(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 
 	// 导出多个文档集合
 	export.RunSet(h, discoveredTocs)
+
+	logrus.WithFields(logrus.Fields{
+		"总共": len(discoveredTocs),
+		"成功": export.SuccessCount,
+		"失败": export.FailureCount,
+	}).Info("导出完成，统计报告")
 }
 
 // 导出知识库中每篇文档
@@ -97,6 +103,12 @@ func all(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 
 	// 导出知识库中每篇文档
 	export.RunOne(h, tocsList.Data)
+
+	logrus.WithFields(logrus.Fields{
+		"总共": len(tocsList.Data),
+		"成功": export.SuccessCount,
+		"失败": export.FailureCount,
+	}).Info("导出完成，统计报告")
 }
 
 func main() {

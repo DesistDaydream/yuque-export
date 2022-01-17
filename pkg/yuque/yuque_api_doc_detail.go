@@ -31,8 +31,13 @@ func (dd *DocDetailData) Handle(h *handler.HandlerObject) error {
 func (dd *DocDetailData) GetDocDetailBodyHTML(h *handler.HandlerObject, slug string) (string, string, error) {
 	err := dd.Get(h, slug)
 	if err != nil {
-		logrus.Error("获取 HTML 格式的文档详情失败")
+		logrus.WithFields(logrus.Fields{
+			"doc_title": dd.Data.Title,
+			"doc_slug":  dd.Data.Slug,
+			"err":       err,
+		}).Error("获取文档详情失败")
 		return "", "", err
 	}
+
 	return dd.Data.BodyHTML, dd.Data.Title, nil
 }

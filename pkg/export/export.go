@@ -1,9 +1,11 @@
 package export
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/DesistDaydream/yuque-export/pkg/utils/converter"
 )
@@ -38,14 +40,21 @@ func ExportDoc(exportURL string, tocName string) error {
 }
 
 func ExportMd(data string, name string) error {
+	// 将文档标题中的 / 替换为 -，防止无法创建文件
+	newName := strings.ReplaceAll(name, "/", "-")
+	newName = strings.ReplaceAll(newName, " ", "-")
+
 	mark, err := converter.ConvertHTML2Markdown(data)
 	if err != nil {
 		return err
 	}
 
 	b := []byte(mark)
-	fileName := "./files/" + name + ".md"
-	os.WriteFile(fileName, b, 0666)
+	fileName := "./files/" + newName + ".md"
+	err = os.WriteFile(fileName, b, 0666)
+	if err != nil {
+		return fmt.Errorf("写入 %v 文件由于 %v 原因而失败", name, err)
+	}
 
 	return nil
 }

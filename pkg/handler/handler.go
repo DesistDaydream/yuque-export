@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -64,29 +65,26 @@ func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody []byte,
 	// 创建一个新的 Request
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return err
+		return fmt.Errorf("创建HTTP请求异常:%v", err)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Auth-Token", yc.Token)
 
 	resp, err := yc.Client.Do(req)
-	if err != nil {
-		logrus.Error("获取响应体错误")
-		return err
+	if err != nil || resp.StatusCode != 200 {
+		return fmt.Errorf("响应异常,状态:%v,错误:%v", resp.Status, err)
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Error("读取响应体错误")
-		return err
+		return fmt.Errorf("读取响应体错误:%v", err)
 	}
 
 	err = json.Unmarshal(respBody, data)
 	if err != nil {
-		logrus.Error("解析响应体错误")
-		return err
+		return fmt.Errorf("解析响应体错误:%v", err)
 	}
 
 	return nil
@@ -104,7 +102,7 @@ func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, d
 	// 创建一个新的 Request
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
 	if err != nil {
-		return err
+		return fmt.Errorf("创建HTTP请求异常:%v", err)
 	}
 
 	req.Header.Add("content-type", "application/json")
@@ -113,22 +111,19 @@ func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, d
 	req.Header.Add("X-Auth-Token", yc.Token)
 
 	resp, err := yc.Client.Do(req)
-	if err != nil {
-		logrus.Error("获取响应体错误")
-		return err
+	if err != nil || resp.StatusCode != 200 {
+		return fmt.Errorf("响应异常,状态:%v,错误:%v", resp.Status, err)
 	}
 	defer resp.Body.Close()
 
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Error("读取响应体错误")
-		return err
+		return fmt.Errorf("读取响应体错误:%v", err)
 	}
 
 	err = json.Unmarshal(respBody, data)
 	if err != nil {
-		logrus.Error("解析响应体错误")
-		return err
+		return fmt.Errorf("解析响应体错误:%v", err)
 	}
 
 	return nil

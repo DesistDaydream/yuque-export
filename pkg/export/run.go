@@ -9,6 +9,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	SuccessCount int
+	FailureCount int
+)
+
 func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -34,15 +39,25 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 					"err": err,
 					"toc": toc.Title,
 				}).Error("获取待导出 TOC 的 URL 失败!")
-			}
+				FailureCount++
+			} else {
+				logrus.WithFields(logrus.Fields{
+					"toc_title":  toc.Title,
+					"toc_uuid":   toc.UUID,
+					"export_url": exportURL,
+				}).Infof("获取待导出 TOC 的 URL 成功!")
 
-			// 导出笔记
-			if h.Flags.IsExport {
-				err = ExportDoc(exportURL, toc.Title)
-				if err != nil {
-					logrus.WithFields(logrus.Fields{
-						"err": err,
-					}).Error("导出 TOC 失败!")
+				// 导出笔记
+				if h.Flags.IsExport {
+					err = ExportDoc(exportURL, toc.Title)
+					if err != nil {
+						logrus.WithFields(logrus.Fields{
+							"err": err,
+						}).Error("导出 TOC 失败!")
+						FailureCount++
+					} else {
+						SuccessCount++
+					}
 				}
 			}
 
@@ -77,17 +92,22 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 			body, name, err := docDetail.GetDocDetailBodyHTML(h, slug)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
+					"doc": name,
 					"err": err,
-					"toc": name,
-				}).Error("获取待导出 DOC 失败!")
-			}
-
-			// 导出笔记
-			err = ExportMd(body, name)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"err": err,
-				}).Error("导出 MD 失败!")
+				}).Error("获取待导出 DOC 的 HTML 失败!")
+				FailureCount++
+			} else {
+				// 导出笔记
+				err = ExportMd(body, name)
+				if err != nil {
+					logrus.WithFields(logrus.Fields{
+						"doc": name,
+						"err": err,
+					}).Error("导出 MD 失败!")
+					FailureCount++
+				} else {
+					SuccessCount++
+				}
 			}
 
 			<-concurrenceControl

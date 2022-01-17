@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
-	"github.com/sirupsen/logrus"
 )
 
 // ReqBodyForGetExportURL is
@@ -57,12 +56,7 @@ func (e *ExportsData) GetExportTocURL(h *handler.HandlerObject, toc TOC) (string
 	err := e.Get(h, toc.UUID)
 	if err != nil {
 		return "", err
-	} else {
-		logrus.WithFields(logrus.Fields{
-			"toc_title":  toc.Title,
-			"toc_uuid":   toc.UUID,
-			"export_url": e.Data.URL,
-		}).Infof("获取待导出 TOC 的 URL 成功!")
 	}
+
 	return e.Data.URL, nil
 }
