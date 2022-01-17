@@ -47,6 +47,7 @@ func ExportMd(dd *yuque.DocDetailData, path string) error {
 	newName = strings.ReplaceAll(newName, "(", "-")
 	newName = strings.ReplaceAll(newName, ")", "")
 
+	// 有的文档名称相同，为防止重名，需要让文件名具有唯一性
 	fileName := fmt.Sprintf("%s/%s-%s.md", path, newName, dd.Data.Slug)
 
 	md, err := converter.ConvertHTML2Markdown(dd.Data.BodyHTML)
