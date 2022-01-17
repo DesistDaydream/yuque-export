@@ -93,6 +93,7 @@ func all(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	// 	panic(err)
 	// }
 	// docsList.Handle(h)
+	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
 	// 导出知识库中每篇文档
 	export.RunOne(h, tocsList.Data)

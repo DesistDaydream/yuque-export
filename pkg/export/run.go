@@ -27,7 +27,8 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
-			exportURL, err := yuque.GetURLForExportToc(h, toc)
+			exportsData := yuque.NewExportsData()
+			exportURL, err := exportsData.GetExportTocURL(h, toc)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,
@@ -35,7 +36,7 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 				}).Error("获取待导出 TOC 的 URL 失败!")
 			}
 
-			// 开始导出笔记
+			// 导出笔记
 			if h.Flags.IsExport {
 				err = ExportDoc(exportURL, toc.Title)
 				if err != nil {
@@ -59,7 +60,7 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	concurrenceControl := make(chan bool, 5)
+	concurrenceControl := make(chan bool, 3)
 
 	for _, toc := range tocs {
 		concurrenceControl <- true
@@ -71,10 +72,8 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 		go func(slug string) {
 			defer wg.Done()
 
-			// 获取 Doc 详情
+			// 获取 Doc 的 HTML 格式信息
 			docDetail := yuque.NewDocDetail()
-
-			// 获取文档的 HTML 格式信息
 			body, name, err := docDetail.GetDocDetailBodyHTML(h, slug)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{

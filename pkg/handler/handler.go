@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -51,16 +52,17 @@ func NewYuqueClient(flags YuqueHandlerFlags) *YuqueClient {
 	}
 }
 
-// 处理语雀 API 时要使用的 HTTP 处理器
-func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody io.Reader, data YuqueData) error {
+// 处理语雀 API V2 时要使用的 HTTP 处理器
+func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody []byte, data YuqueData) error {
 	url := YuqueBaseAPIV2 + endpoint
 	logrus.WithFields(logrus.Fields{
-		"url":    url,
-		"method": method,
+		"url":     url,
+		"method":  method,
+		"reqBody": string(reqBody),
 	}).Debug("检查发起请求时的URL")
 
 	// 创建一个新的 Request
-	req, err := http.NewRequest(method, url, reqBody)
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -91,21 +93,20 @@ func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody io.Read
 }
 
 // 处理语雀 API 时要使用的 HTTP 处理器
-func (yc *YuqueClient) Request(method string, endpoint string, data YuqueData) error {
-	url := YuqueBaseAPIV2 + endpoint
+func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, data YuqueData) error {
+	url := YuqueBaseAPI + endpoint
 	logrus.WithFields(logrus.Fields{
-		"url":    url,
-		"method": method,
+		"url":     url,
+		"method":  method,
+		"reqBody": string(reqBody),
 	}).Debug("检查发起请求时的URL")
 
 	// 创建一个新的 Request
-	req, err := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
 
-	req.Header.Add("authority", "www.yuque.com")
-	req.Header.Add("accept", "application/json")
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("referer", yc.Referer)
 	req.Header.Add("cookie", yc.Cookie)

@@ -1,18 +1,15 @@
 package yuque
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/sirupsen/logrus"
 )
 
 // ReqBodyForGetExportURL is
-type ReqBodyForExportToc struct {
+type ReqBodyForExportData struct {
 	Type         string `json:"type"`
 	Force        int    `json:"force"`
 	Title        string `json:"title"`
@@ -21,69 +18,51 @@ type ReqBodyForExportToc struct {
 	WithChildren bool   `json:"with_children"`
 }
 
-// GetURLForExportToc 获取待导出 TOC 的 URL
-func GetURLForExportToc(h *handler.HandlerObject, toc TOC) (string, error) {
-	url := "https://www.yuque.com/api/books/" + fmt.Sprint(h.Namespace) + "/export"
-	method := "POST"
+func NewExportsData() *ExportsData {
+	return &ExportsData{}
+}
+
+func (e *ExportsData) Get(h *handler.HandlerObject, name string) error {
+	endpoint := fmt.Sprintf("/books/%s/export", h.Namespace)
 
 	// 根据节点信息，配置当前待导出节点的请求体信息
-	reqBodyForExportToc := ReqBodyForExportToc{
-		Type:         "lakebook",
-		Force:        0,
-		Title:        toc.Title,
-		TocNodeUUID:  toc.UUID,
-		TocNodeURL:   toc.URL,
-		WithChildren: true,
-	}
-
 	// 解析请求体
-	reqBodyByte, err := json.Marshal(reqBodyForExportToc)
+	reqBodyByte, err := json.Marshal(ReqBodyForExportData{
+		Type:  "lakebook",
+		Force: 0,
+		// Title:        toc.Title,
+		// TocNodeUUID:  toc.UUID,
+		// TocNodeURL:   toc.URL,
+		TocNodeUUID:  name,
+		WithChildren: true,
+	})
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	// 实例化 HTTP 请求
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBodyByte))
+	yc := handler.NewYuqueClient(h.Flags)
+	err = yc.Request("POST", endpoint, reqBodyByte, e)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	req.Header.Add("authority", "www.yuque.com")
-	req.Header.Add("accept", "application/json")
-	req.Header.Add("content-type", "application/json")
-	req.Header.Add("referer", h.Flags.Referer)
-	req.Header.Add("cookie", h.Flags.Cookie)
+	return nil
+}
 
-	// 建立连接
-	client := &http.Client{}
+func (e *ExportsData) Handle(h *handler.HandlerObject) error {
+	panic("not implemented") // TODO: Implement
+}
 
-	resp, err := client.Do(req)
+func (e *ExportsData) GetExportTocURL(h *handler.HandlerObject, toc TOC) (string, error) {
+	err := e.Get(h, toc.UUID)
 	if err != nil {
 		return "", err
-	}
-	defer resp.Body.Close()
-
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var exportDatas ExportsData
-
-	err = json.Unmarshal(respBody, &exportDatas)
-	if err != nil {
-		return "", err
-	}
-
-	if resp.StatusCode == 200 {
-		logrus.WithFields(logrus.Fields{
-			"toc":    toc.Title,
-			"status": resp.Status,
-			"url":    exportDatas.Data.URL,
-		}).Infof("获取待导出 TOC 的 URL 成功!")
 	} else {
-		return "", fmt.Errorf(resp.Status)
+		logrus.WithFields(logrus.Fields{
+			"toc_title":  toc.Title,
+			"toc_uuid":   toc.UUID,
+			"export_url": e.Data.URL,
+		}).Infof("获取待导出 TOC 的 URL 成功!")
 	}
-
-	return exportDatas.Data.URL, nil
+	return e.Data.URL, nil
 }

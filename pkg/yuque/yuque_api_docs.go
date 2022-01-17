@@ -1,6 +1,8 @@
 package yuque
 
 import (
+	"fmt"
+
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 )
 
@@ -9,7 +11,7 @@ func NewDocsList() *DocsList {
 }
 
 func (d *DocsList) Get(h *handler.HandlerObject, name string) error {
-	endpoint := "/repos/" + name + "/docs"
+	endpoint := fmt.Sprintf("/repos/%s/docs", name)
 
 	yc := handler.NewYuqueClient(h.Flags)
 	err := yc.RequestV2("GET", endpoint, nil, d)

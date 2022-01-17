@@ -13,7 +13,7 @@ func NewDocDetail() *DocDetailData {
 
 func (dd *DocDetailData) Get(h *handler.HandlerObject, name string) error {
 	// 获取文档详情 URL
-	endpoint := "/repos/" + fmt.Sprint(h.Namespace) + "/docs/" + name
+	endpoint := fmt.Sprintf("/repos/%s/docs/%s", h.Namespace, name)
 
 	yc := handler.NewYuqueClient(h.Flags)
 	err := yc.RequestV2("GET", endpoint, nil, dd)

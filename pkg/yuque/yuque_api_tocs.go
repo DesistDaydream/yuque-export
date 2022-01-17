@@ -13,8 +13,7 @@ func NewTocsList() *TocsList {
 
 // 从语雀的 API 中获取知识库内的文档列表
 func (t *TocsList) Get(h *handler.HandlerObject, name string) error {
-	fmt.Println(name)
-	endpoint := "/repos/" + h.Namespace + "/toc"
+	endpoint := fmt.Sprintf("/repos/%s/toc", h.Namespace)
 
 	yc := handler.NewYuqueClient(h.Flags)
 	err := yc.RequestV2("GET", endpoint, nil, t)

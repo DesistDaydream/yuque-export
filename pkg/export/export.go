@@ -19,15 +19,13 @@ func ExportDoc(exportURL string, tocName string) error {
 		return err
 	}
 
-	// req.Header.Add("Content-Type", "application/json")
-
-	res, err := client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
