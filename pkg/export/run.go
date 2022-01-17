@@ -49,7 +49,7 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 
 				// 导出笔记
 				if h.Flags.IsExport {
-					err = ExportDoc(exportURL, toc.Title)
+					err = ExportDoc(exportURL, h.Flags.Path, toc.Title)
 					if err != nil {
 						logrus.WithFields(logrus.Fields{
 							"err": err,
@@ -98,7 +98,7 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 				FailureCount++
 			} else {
 				// 导出笔记
-				err = ExportMd(body, name)
+				err = ExportMd(body, h.Flags.Path, name)
 				if err != nil {
 					logrus.WithFields(logrus.Fields{
 						"doc": name,
