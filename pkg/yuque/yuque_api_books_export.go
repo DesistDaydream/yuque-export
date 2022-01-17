@@ -51,12 +51,3 @@ func (e *ExportsData) Get(h *handler.HandlerObject, name string) error {
 func (e *ExportsData) Handle(h *handler.HandlerObject) error {
 	panic("not implemented") // TODO: Implement
 }
-
-func (e *ExportsData) GetExportTocURL(h *handler.HandlerObject, toc TOC) (string, error) {
-	err := e.Get(h, toc.UUID)
-	if err != nil {
-		return "", err
-	}
-
-	return e.Data.URL, nil
-}

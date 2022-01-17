@@ -33,7 +33,7 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 
 			// 获取待导出笔记的 URL
 			exportsData := yuque.NewExportsData()
-			exportURL, err := exportsData.GetExportTocURL(h, toc)
+			err := exportsData.Get(h, toc.UUID)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,
@@ -44,12 +44,12 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 				logrus.WithFields(logrus.Fields{
 					"toc_title":  toc.Title,
 					"toc_uuid":   toc.UUID,
-					"export_url": exportURL,
+					"export_url": exportsData.Data.URL,
 				}).Infof("获取待导出 TOC 的 URL 成功!")
 
 				// 导出笔记
 				if h.Flags.IsExport {
-					err = ExportDoc(exportURL, h.Flags.Path, toc.Title)
+					err = ExportDoc(exportsData.Data.URL, h.Flags.Path, toc.Title)
 					if err != nil {
 						logrus.WithFields(logrus.Fields{
 							"err": err,
@@ -75,33 +75,31 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	concurrenceControl := make(chan bool, 1)
+	concurrenceControl := make(chan bool, 3)
 
 	for _, toc := range tocs {
 		concurrenceControl <- true
 
 		wg.Add(1)
 
-		slug := toc.Slug
-
-		go func(slug string) {
+		go func(toc yuque.TOC) {
 			defer wg.Done()
 
 			// 获取 Doc 的 HTML 格式信息
 			docDetail := yuque.NewDocDetail()
-			body, name, err := docDetail.GetDocDetailBodyHTML(h, slug)
+			err := docDetail.Get(h, toc.Slug)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
-					"doc": name,
+					"doc": docDetail.Data.Title,
 					"err": err,
-				}).Error("获取待导出 DOC 的 HTML 失败!")
+				}).Error("获取文档详情失败!")
 				FailureCount++
 			} else {
 				// 导出笔记
-				err = ExportMd(body, h.Flags.Path, name)
+				err = ExportMd(docDetail, h.Flags.Path)
 				if err != nil {
 					logrus.WithFields(logrus.Fields{
-						"doc": name,
+						"doc": docDetail.Data.Title,
 						"err": err,
 					}).Error("导出 MD 失败!")
 					FailureCount++
@@ -111,7 +109,7 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 			}
 
 			<-concurrenceControl
-		}(slug)
+		}(toc)
 
 		time.Sleep(time.Duration(h.Flags.ExportDuration) * time.Second)
 	}
