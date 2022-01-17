@@ -75,7 +75,7 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	concurrenceControl := make(chan bool, 3)
+	concurrenceControl := make(chan bool, 1)
 
 	for _, toc := range tocs {
 		concurrenceControl <- true
@@ -112,5 +112,7 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 
 			<-concurrenceControl
 		}(slug)
+
+		time.Sleep(time.Duration(h.Flags.ExportDuration) * time.Second)
 	}
 }
