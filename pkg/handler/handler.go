@@ -55,7 +55,7 @@ func NewYuqueClient(flags YuqueHandlerFlags) *YuqueClient {
 }
 
 // 处理语雀 API V2 时要使用的 HTTP 处理器
-func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody []byte, data YuqueData) error {
+func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody []byte, data YuqueDataHandler) error {
 	url := YuqueBaseAPIV2 + endpoint
 	logrus.WithFields(logrus.Fields{
 		"url":     url,
@@ -92,7 +92,7 @@ func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody []byte,
 }
 
 // 处理语雀 API 时要使用的 HTTP 处理器。现阶段只有 books/{namesapce}/export 接口会用到
-func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, data YuqueData) error {
+func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, data YuqueDataHandler) error {
 	url := YuqueBaseAPI + endpoint
 	logrus.WithFields(logrus.Fields{
 		"url":     url,
