@@ -6,6 +6,7 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 )
 
+// 实例化文档列表
 func NewDocsList() *DocsList {
 	return &DocsList{}
 }
@@ -21,6 +22,7 @@ func (d *DocsList) Get(h *handler.HandlerObject, name string) error {
 
 	return nil
 }
+
 func (d *DocsList) Handle(h *handler.HandlerObject) error {
 	return nil
 }

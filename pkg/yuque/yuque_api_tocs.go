@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// 实例化节点列表
 func NewTocsList() *TocsList {
 	return &TocsList{}
 }

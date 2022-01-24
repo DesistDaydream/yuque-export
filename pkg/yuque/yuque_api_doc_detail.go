@@ -6,6 +6,7 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 )
 
+// 实例化文档详情
 func NewDocDetail() *DocDetailData {
 	return &DocDetailData{}
 }

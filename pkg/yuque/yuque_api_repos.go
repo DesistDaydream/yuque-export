@@ -6,6 +6,7 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 )
 
+// 实例化一个仓库列表
 func NewReposList() *ReposList {
 	return &ReposList{}
 }
