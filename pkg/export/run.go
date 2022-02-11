@@ -15,17 +15,17 @@ var (
 )
 
 func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
+	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
-
-	// 介语雀不让并发太多啊
+	// 控制并发
 	concurrenceControl := make(chan bool, 1)
 
 	// 逐一导出节点内容
 	for _, toc := range tocs {
-		// 介语雀不让并发太多啊
+		// 控制并发
 		concurrenceControl <- true
-
+		// 并发
 		wg.Add(1)
 
 		go func(toc yuque.TOC) {
@@ -61,11 +61,11 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 				}
 			}
 
-			// 介语雀不让并发太多啊
+			// 控制并发
 			<-concurrenceControl
 		}(toc)
 
-		// 介语雀不让并发太多啊。。。。。接口请求多了。。。直接限流了。。。囧
+		// 控制并发。。。。。接口请求多了。。。直接限流了。。。囧
 		// 其实主要是对 GetURlForExportToc 中的接口限流，防止请求过多，导致服务器处理很多压缩任务
 		time.Sleep(time.Duration(h.Flags.ExportDuration) * time.Second)
 	}
