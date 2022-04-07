@@ -15,7 +15,7 @@
 
 ## 导出文档集合
 ```bash
-go run cmd/main.go --log-level=debug --user-token="XXX" --user-cookie="YYY" --referer="ZZZ" --repo-name="学习知识库" --export=true
+go run cmd/main.go --log-level=debug --user-token="XXX" --user-cookie="YYY" --referer="ZZZ" --repo-name="学习知识库" --export=true --time-out=120s
 ```
 
 ##导出每篇文档
