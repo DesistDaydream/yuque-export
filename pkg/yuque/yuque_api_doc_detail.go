@@ -27,3 +27,8 @@ func (dd *DocDetailData) Get(h *handler.HandlerObject, name string) error {
 func (dd *DocDetailData) Handle(h *handler.HandlerObject) error {
 	return nil
 }
+
+// 获取文档公开状态
+func (dd *DocDetailData) GetPublic() int {
+	return dd.Data.Public
+}

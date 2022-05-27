@@ -14,12 +14,12 @@ var (
 	FailureCount int
 )
 
-func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
+func ExportSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
 	// 控制并发
-	concurrenceControl := make(chan bool, 1)
+	concurrenceControl := make(chan bool, h.Flags.Concurrency)
 
 	// 逐一导出节点内容
 	for _, toc := range tocs {
@@ -71,11 +71,11 @@ func RunSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 	}
 }
 
-func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
+func ExportAll(h *handler.HandlerObject, tocs []yuque.TOC) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	concurrenceControl := make(chan bool, 3)
+	concurrenceControl := make(chan bool, h.Flags.Concurrency)
 
 	for _, toc := range tocs {
 		// TODO: 当每个 TOC 信息中，data.child_uuid 字段不为空时，为其创建同名文件夹。以便更好分类
@@ -118,4 +118,58 @@ func RunOne(h *handler.HandlerObject, tocs []yuque.TOC) {
 
 		time.Sleep(time.Duration(h.Flags.ExportDuration) * time.Second)
 	}
+}
+
+// 异常笔记
+type ExceptionDoc struct {
+	Title string `json:"title"`
+	Slug  string `json:"slug"`
+}
+
+type ExceptionDocs struct {
+	ExceptionDocs []ExceptionDoc `json:"exception_docs"`
+}
+
+// 某些情况下，代替其他两个 RunXXX 函数以获取笔记详情
+func GetDocDetail(h *handler.HandlerObject, tocs []yuque.TOC) ExceptionDocs {
+	var eds ExceptionDocs
+
+	var wg sync.WaitGroup
+
+	concurrencyControl := make(chan bool, h.Flags.Concurrency)
+
+	for _, toc := range tocs {
+		concurrencyControl <- true
+
+		wg.Add(1)
+
+		go func(toc yuque.TOC) {
+			defer wg.Done()
+
+			// 获取 Doc 详情
+			docDetail := yuque.NewDocDetail()
+			if err := docDetail.Get(h, toc.Slug); err != nil {
+				logrus.WithFields(logrus.Fields{
+					"doc": docDetail.Data.Title,
+					"err": err,
+				}).Error("获取文档详情失败!")
+			} else {
+				// 获取文档状态
+				public := docDetail.GetPublic()
+				if public == 0 {
+					eds.ExceptionDocs = append(eds.ExceptionDocs, ExceptionDoc{
+						Title: docDetail.Data.Title,
+						Slug:  docDetail.Data.Slug,
+					})
+				}
+			}
+			<-concurrencyControl
+		}(toc)
+
+		time.Sleep(time.Duration(h.Flags.ExportDuration) * time.Second)
+	}
+
+	wg.Wait()
+
+	return eds
 }

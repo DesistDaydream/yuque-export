@@ -30,6 +30,8 @@ type YuqueHandlerFlags struct {
 	IsExport bool
 	// 导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求
 	ExportDuration int64
+	// 并发数
+	Concurrency int
 }
 
 // AddFlag 用来为语雀用户数据设置一些值
@@ -48,4 +50,5 @@ func (opts *YuqueHandlerFlags) AddFlag() {
 	pflag.IntVar(&opts.TocDepth, "toc-depth", 2, "知识库的深度，即从哪一级目录开始导出")
 	pflag.BoolVar(&opts.IsExport, "export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
 	pflag.Int64Var(&opts.ExportDuration, "export-duration", 15, "导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求")
+	pflag.IntVar(&opts.Concurrency, "concurrency", 1, "并发数量.")
 }

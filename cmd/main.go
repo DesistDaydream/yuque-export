@@ -65,7 +65,7 @@ func LogInit(level, file, format string) error {
 }
 
 // 导出文档集合
-func set(h *handler.HandlerObject, tocsList *yuque.TocsList) {
+func exportSet(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	// 发现需要导出的文档
 	discoveredTocs := tocsList.DiscoverTocs(h)
 	// 输出一些 Debug 信息
@@ -80,7 +80,7 @@ func set(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	}
 
 	// 导出多个文档集合
-	export.RunSet(h, discoveredTocs)
+	export.ExportSet(h, discoveredTocs)
 
 	logrus.WithFields(logrus.Fields{
 		"总共": len(discoveredTocs),
@@ -90,7 +90,7 @@ func set(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 }
 
 // 导出知识库中每篇文档
-func all(h *handler.HandlerObject, tocsList *yuque.TocsList) {
+func exportAll(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	// 获取 Docs 列表
 	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
 	// docsList := yuque.NewDocsList()
@@ -102,13 +102,35 @@ func all(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
 	// 导出知识库中每篇文档
-	export.RunOne(h, tocsList.Data)
+	export.ExportAll(h, tocsList.Data)
 
 	logrus.WithFields(logrus.Fields{
 		"总共": len(tocsList.Data),
 		"成功": export.SuccessCount,
 		"失败": export.FailureCount,
 	}).Info("导出完成，统计报告")
+}
+
+// 获取文档详情
+func getDocDetail(h *handler.HandlerObject, tocsList *yuque.TocsList) {
+	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
+
+	// 导出知识库中每篇文档
+	eds := export.GetDocDetail(h, tocsList.Data)
+
+	fmt.Println(eds.ExceptionDocs)
+
+	// 输出异常笔记信息
+	for _, d := range eds.ExceptionDocs {
+		logrus.WithFields(logrus.Fields{
+			"title": d.Title,
+			"slug":  d.Slug,
+		}).Infof("私密笔记信息!")
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"总共": len(eds.ExceptionDocs),
+	}).Info("统计报告")
 }
 
 func main() {
@@ -155,9 +177,11 @@ func main() {
 
 	switch yhFlags.ExportMethod {
 	case "set":
-		set(h, tocsList)
+		exportSet(h, tocsList)
 	case "all":
-		all(h, tocsList)
+		exportAll(h, tocsList)
+	case "get":
+		getDocDetail(h, tocsList)
 	default:
 		panic("请指定导出方式")
 	}
