@@ -154,7 +154,7 @@ func GetDocDetail(h *handler.HandlerObject, tocs []yuque.TOC) ExceptionDocs {
 					"err": err,
 				}).Error("获取文档详情失败!")
 			} else {
-				// 获取文档状态
+				// 获取文档公开状态
 				public := docDetail.GetPublic()
 				if public == 0 {
 					eds.ExceptionDocs = append(eds.ExceptionDocs, ExceptionDoc{

@@ -115,7 +115,6 @@ func exportAll(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 func getDocDetail(h *handler.HandlerObject, tocsList *yuque.TocsList) {
 	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
-	// 导出知识库中每篇文档
 	eds := export.GetDocDetail(h, tocsList.Data)
 
 	fmt.Println(eds.ExceptionDocs)
