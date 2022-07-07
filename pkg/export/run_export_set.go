@@ -6,7 +6,7 @@ import (
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
-	yuque "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v1"
+	corev1 "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v1"
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 	"github.com/sirupsen/logrus"
 )
@@ -23,8 +23,6 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.Au
 	// 控制并发
 	concurrencyControl := make(chan bool, h.Flags.Concurrency)
 
-	client := yuque.NewYuqueClient(auth, h.Flags.Timeout)
-
 	// 逐一导出节点内容
 	for _, toc := range tocs {
 		// 控制并发
@@ -36,8 +34,7 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.Au
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
-			bookExportClient := yuque.NewBookService(client, h.RepoID)
-			request := &yuque.BookExportRequest{
+			request := &corev1.BookExportRequest{
 				Type:         "lakebook",
 				Force:        0,
 				Title:        toc.Title,
@@ -45,7 +42,7 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.Au
 				TocNodeURL:   toc.URL,
 				WithChildren: true,
 			}
-			resp, err := bookExportClient.GetDownloadURL(request)
+			resp, err := h.ClientV1.BookExport.GetDownloadURL(request, h.Flags.Timeout, h.RepoID)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,

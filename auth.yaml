@@ -1,5 +1,5 @@
-username: XXXXX
-token: YYYYY
-cookie: ZZZZZZ
+username: 用户名
+token: 从https://www.yuque.com/settings/tokens这里获取token
+cookie: 访问文档时的cookie
 referer: "https://www.yuque.com"
-reponame: QQQQQQ
+reponame: 想要导出的知识库的名称

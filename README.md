@@ -29,13 +29,13 @@ go run cmd/main.go --log-level=debug --method=set --export=true --time-out=120s
 ## 导出每篇文档
 
 ```bash
-go run cmd/main.go --log-level=debug --method=all --repo-name="学习知识库" --export=true --export-duration=1
+go run cmd/main.go --log-level=debug --method=all --export=true --export-duration=1
 ```
 
 ## 获取文档详情
 
 ```bash
-go run cmd/main.go --log-level=debug --method=get --repo-name="学习知识库" --export=true --export-duration=0 --concurrency=1
+go run cmd/main.go --log-level=debug --method=get --export=true --export-duration=0 --concurrency=1
 ```
 
 # TODO

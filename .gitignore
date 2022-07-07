@@ -1,5 +1,6 @@
 
 .vscode/sftp.json
-pkg/yuquesdk/*.log
+*.log
 files/*.lakebook
+files/*.md
 DesistDaydream.yaml

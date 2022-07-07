@@ -13,24 +13,21 @@ import (
 	// log "github.com/sirupsen/logrus"
 )
 
-type ClientV1 struct {
-	Client  *http.Client
+type Client struct {
 	Token   string
 	Referer string
 	Cookie  string
 }
 
-type RequestOptions struct {
+type RequestOption struct {
 	Method string
 	Data   map[string]string
+	Time   time.Duration
 }
 
 // 实例化一个向 Yuque API 发起 HTTP 请求的客户端
-func NewYuqueClient(auth config.AuthInfo, time time.Duration) *ClientV1 {
-	return &ClientV1{
-		Client: &http.Client{
-			Timeout: time,
-		},
+func NewClient(auth *config.AuthInfo) *Client {
+	return &Client{
 		Token:   auth.Token,
 		Referer: auth.Referer,
 		Cookie:  auth.Cookie,
@@ -38,16 +35,16 @@ func NewYuqueClient(auth config.AuthInfo, time time.Duration) *ClientV1 {
 }
 
 // 处理语雀 API 时要使用的 HTTP 处理器。现阶段只有 books/{namesapce}/export 接口会用到
-func (yc *ClientV1) Request(method string, endpoint string, reqBody []byte, container interface{}) (interface{}, error) {
+func (yc *Client) Request(endpoint string, reqBody []byte, container interface{}, opts *RequestOption) (interface{}, error) {
 	url := BaseAPI + endpoint
 	logrus.WithFields(logrus.Fields{
 		"url":     url,
-		"method":  method,
+		"method":  opts.Method,
 		"reqBody": string(reqBody),
 	}).Debug("检查发起请求时的URL")
 
 	// 创建一个新的 Request
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(opts.Method, url, bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, fmt.Errorf("创建HTTP请求异常:%v", err)
 	}
@@ -57,7 +54,11 @@ func (yc *ClientV1) Request(method string, endpoint string, reqBody []byte, cont
 	req.Header.Add("cookie", yc.Cookie)
 	req.Header.Add("X-Auth-Token", yc.Token)
 
-	resp, err := yc.Client.Do(req)
+	client := http.Client{
+		Timeout: opts.Time,
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	} else if resp.StatusCode != 200 {

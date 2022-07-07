@@ -4,7 +4,7 @@ var (
 	// BaseAPI address
 	BaseAPI = "https://www.yuque.com/api/"
 	//EmptyRO empty options
-	// EmptyRO = new(RequestOption)
+	EmptyRO = new(RequestOption)
 )
 
 // book/X/export

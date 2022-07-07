@@ -93,7 +93,7 @@ func getDocDetail(h *handler.HandlerObject, tocsList core.RepoToc) {
 }
 
 func main() {
-	authFile := pflag.StringP("file", "f", "lichenhao.yaml", "配置文件路径")
+	authFile := pflag.StringP("file", "f", "DesistDaydream.yaml", "配置文件路径")
 	// 设置命令行标志
 	logFlags := &logging.LoggingFlags{}
 	logFlags.AddFlags()
@@ -110,9 +110,10 @@ func main() {
 
 	// 通过 sdk 实例化语雀客户端
 	y := yuquesdk.NewService(auth.Token)
+	y1 := yuquesdk.NewServiceV1(auth)
 
 	// 实例化处理器
-	h := handler.NewHandlerObject(*yhFlags, y)
+	h := handler.NewHandlerObject(*yhFlags, y, y1)
 
 	// 获取用户名称
 	userInfo, err := y.User.Get("")
@@ -140,6 +141,10 @@ func main() {
 			logrus.Infof("将要导出【%v】知识库，Namespace 为 %v", auth.RepoName, repo.Namespace)
 			break
 		}
+	}
+
+	if h.Namespace == "" {
+		logrus.Fatalln("未找到待导出的知识库")
 	}
 
 	// 获取 Toc 列表

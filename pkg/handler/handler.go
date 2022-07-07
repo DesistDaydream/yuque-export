@@ -9,12 +9,9 @@ import (
 
 // YuqueHandlerFlags 通过命令行标志传递的认证选项
 type YuqueHandlerFlags struct {
-	// UserName string
-	RepoName string
-
 	// 导出方式
 	ExportMethod string
-	// 文件保存路径
+	// 导出的文件保存路径
 	Path string
 
 	// 关于 http.Client 的选项
@@ -35,9 +32,6 @@ type YuqueHandlerFlags struct {
 
 // AddFlag 用来为语雀用户数据设置一些值
 func (opts *YuqueHandlerFlags) AddFlag() {
-	// pflag.StringVar(&opts.UserName, "user-name", "DesistDaydream", "用户名称")
-	pflag.StringVar(&opts.RepoName, "repo-name", "学习知识库", "待导出知识库名称")
-
 	pflag.StringVar(&opts.ExportMethod, "method", "set", "导出方式,one of: set|all.set 导出文档集合;all 导出每一篇文档")
 	pflag.StringVar(&opts.Path, "paht", "./files", "导出路径")
 
@@ -60,13 +54,15 @@ type HandlerObject struct {
 	// 命令行选项
 	Flags YuqueHandlerFlags
 
-	Client *yuquesdk.Service
+	Client   *yuquesdk.Service
+	ClientV1 *yuquesdk.ServiceV1
 }
 
 // 根据命令行标志实例化一个处理器
-func NewHandlerObject(flags YuqueHandlerFlags, client *yuquesdk.Service) *HandlerObject {
+func NewHandlerObject(flags YuqueHandlerFlags, client *yuquesdk.Service, clientv1 *yuquesdk.ServiceV1) *HandlerObject {
 	return &HandlerObject{
-		Flags:  flags,
-		Client: client,
+		Flags:    flags,
+		Client:   client,
+		ClientV1: clientv1,
 	}
 }
