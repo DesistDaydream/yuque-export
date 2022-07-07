@@ -6,7 +6,9 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/export"
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/DesistDaydream/yuque-export/pkg/logging"
+	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 	"github.com/DesistDaydream/yuque-export/pkg/yuque"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
@@ -93,45 +95,56 @@ func main() {
 		logrus.Fatal("初始化日志失败", err)
 	}
 
+	auth := config.NewAuthInfo("lichenhao.yaml")
+
 	// 实例化处理器
 	h := handler.NewHandlerObject(*yhFlags)
 
-	// 获取用户信息
-	userData := yuque.NewUserData()
-	err := userData.Get(h, "")
-	if err != nil {
-		panic(err)
-	}
+	// 通过 sdk 实例化语雀客户端
+	y := yuquesdk.NewService(auth.Token)
 
 	// 获取用户名称
-	h.UserName = userData.GetUserName()
+	userInfo, err := y.User.Get("")
+	if err != nil {
+		logrus.Fatalln(err)
+	} else {
+		h.UserName = userInfo.Data.Name
+	}
+
+	logrus.Println(userInfo.Data.Name)
 
 	// 获取知识库列表
-	reposList := yuque.NewReposList()
-	err = reposList.Get(h, h.UserName)
+	repos, err := y.Repo.List(userInfo.Data.Name, "", nil)
 	if err != nil {
-		panic(err)
+		logrus.Fatalln(err)
 	}
+
+	logrus.Debugf("%v 用户共有 %v 个知识库", userInfo.Data.Name, len(repos.Data))
 
 	// 获取待导出知识库
-	h.Namespace = reposList.DiscoverRepos(yhFlags)
+	for _, repo := range repos.Data {
+		if repo.Name == auth.RepoName {
+			h.Namespace = repo.Namespace
+			logrus.Infof("将要导出【%v】知识库，Namespace 为 %v", auth.RepoName, repo.Namespace)
+			break
+		}
+	}
 
 	// 获取 Toc 列表
-	tocsList := yuque.NewTocsList()
-	err = tocsList.Get(h, "")
+	tocs, err := y.Repo.GetToc(h.Namespace)
 	if err != nil {
-		panic(err)
+		logrus.Fatal(err)
 	}
+	logrus.Infof("【%v】知识库共有 %v 篇笔记", auth.RepoName, len(tocs.Data))
 
-	switch yhFlags.ExportMethod {
-	case "set":
-		exportSet(h, tocsList)
-	case "all":
-		exportAll(h, tocsList)
-	case "get":
-		getDocDetail(h, tocsList)
-	default:
-		panic("请指定导出方式")
-	}
-
+	// switch yhFlags.ExportMethod {
+	// case "set":
+	// 	exportSet(h, tocsList)
+	// case "all":
+	// 	exportAll(h, tocsList)
+	// case "get":
+	// 	getDocDetail(h, tocsList)
+	// default:
+	// 	panic("请指定导出方式")
+	// }
 }
