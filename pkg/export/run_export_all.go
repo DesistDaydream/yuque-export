@@ -29,8 +29,6 @@ func ExportAll(h *handler.HandlerObject, tocs []core.RepoTocData) {
 			defer wg.Done()
 
 			// 获取 Doc 的 HTML 格式信息
-			// docDetail := yuque.NewDocDetail()
-			// err := docDetail.Get(h, toc.Slug)
 			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &core.DocGet{Raw: 1})
 			if err != nil {
 				logrus.WithFields(logrus.Fields{

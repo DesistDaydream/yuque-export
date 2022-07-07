@@ -23,6 +23,8 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.Au
 	// 控制并发
 	concurrencyControl := make(chan bool, h.Flags.Concurrency)
 
+	client := yuque.NewYuqueClient(auth, h.Flags.Timeout)
+
 	// 逐一导出节点内容
 	for _, toc := range tocs {
 		// 控制并发
@@ -34,9 +36,16 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.Au
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
-			a := yuque.NewYuqueClient(auth)
-			exportsData := yuque.NewBookService(a)
-			resp, err := exportsData.Get(toc.UUID, h.RepoID, auth)
+			bookExportClient := yuque.NewBookService(client, h.RepoID)
+			request := &yuque.BookExportRequest{
+				Type:         "lakebook",
+				Force:        0,
+				Title:        toc.Title,
+				TocNodeUUID:  toc.UUID,
+				TocNodeURL:   toc.URL,
+				WithChildren: true,
+			}
+			resp, err := bookExportClient.GetDownloadURL(request)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,

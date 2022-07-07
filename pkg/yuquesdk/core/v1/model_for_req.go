@@ -1,7 +1,7 @@
 package v1
 
 // ReqBodyForGetExportURL is
-type BookExportPost struct {
+type BookExportRequest struct {
 	Type         string `json:"type"`
 	Force        int    `json:"force"`
 	Title        string `json:"title"`

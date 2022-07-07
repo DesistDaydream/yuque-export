@@ -3,44 +3,34 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 )
 
 type BookService struct {
-	client *YuqueClient
+	Client *ClientV1
+	RepoID int
 }
 
-func NewBookService(client *YuqueClient) *BookService {
+func NewBookService(client *ClientV1, repoID int) *BookService {
 	return &BookService{
-		client: client,
+		Client: client,
+		RepoID: repoID,
 	}
 }
 
-func (b *BookService) Get(tocNodeUUID string, namespace int, authInfo config.AuthInfo) (BookExport, error) {
-	var e BookExport
-	endpoint := fmt.Sprintf("books/%v/export", namespace)
-	// 根据节点信息，配置当前待导出节点的请求体信息
+func (b *BookService) GetDownloadURL(request *BookExportRequest) (BookExport, error) {
+	var be BookExport
+	endpoint := fmt.Sprintf("books/%v/export", b.RepoID)
+
 	// 解析请求体
-	reqBodyByte, err := json.Marshal(BookExportPost{
-		Type:  "lakebook",
-		Force: 0,
-		// Title:        toc.Title,
-		// TocNodeUUID:  toc.UUID,
-		// TocNodeURL:   toc.URL,
-		TocNodeUUID:  tocNodeUUID,
-		WithChildren: true,
-	})
+	reqBodyByte, err := json.Marshal(request)
 	if err != nil {
 		return BookExport{}, err
 	}
 
-	yc := NewYuqueClient(authInfo)
-
-	_, err = yc.Request("POST", endpoint, reqBodyByte, &e)
+	_, err = b.Client.Request("POST", endpoint, reqBodyByte, &be)
 	if err != nil {
 		return BookExport{}, err
 	}
 
-	return e, nil
+	return be, nil
 }

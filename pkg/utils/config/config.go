@@ -10,6 +10,7 @@ type AuthInfo struct {
 	UserName string `json:"username"`
 	Token    string `yaml:"token"`
 	Cookie   string `yaml:"cookie"`
+	Referer  string `yaml:"referer"`
 	RepoName string `yaml:"reponame"`
 }
 

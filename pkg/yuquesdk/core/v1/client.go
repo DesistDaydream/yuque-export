@@ -13,31 +13,32 @@ import (
 	// log "github.com/sirupsen/logrus"
 )
 
-type YuqueClient struct {
-	Client    *http.Client
-	Token     string
-	Referer   string
-	Cookie    string
-	UserName  string
-	Namespace int
+type ClientV1 struct {
+	Client  *http.Client
+	Token   string
+	Referer string
+	Cookie  string
+}
+
+type RequestOptions struct {
+	Method string
+	Data   map[string]string
 }
 
 // 实例化一个向 Yuque API 发起 HTTP 请求的客户端
-func NewYuqueClient(auth config.AuthInfo) *YuqueClient {
-	return &YuqueClient{
+func NewYuqueClient(auth config.AuthInfo, time time.Duration) *ClientV1 {
+	return &ClientV1{
 		Client: &http.Client{
-			Timeout: time.Duration(180 * time.Second),
+			Timeout: time,
 		},
-		Token:     auth.Token,
-		Referer:   "https://www.yuque.com/DesistDaydream",
-		Cookie:    auth.Cookie,
-		UserName:  "",
-		Namespace: 0,
+		Token:   auth.Token,
+		Referer: auth.Referer,
+		Cookie:  auth.Cookie,
 	}
 }
 
 // 处理语雀 API 时要使用的 HTTP 处理器。现阶段只有 books/{namesapce}/export 接口会用到
-func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, container interface{}) (interface{}, error) {
+func (yc *ClientV1) Request(method string, endpoint string, reqBody []byte, container interface{}) (interface{}, error) {
 	url := BaseAPI + endpoint
 	logrus.WithFields(logrus.Fields{
 		"url":     url,
