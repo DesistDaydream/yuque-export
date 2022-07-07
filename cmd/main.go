@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/DesistDaydream/yuque-export/pkg/export"
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/DesistDaydream/yuque-export/pkg/logging"
@@ -79,8 +77,6 @@ func getDocDetail(h *handler.HandlerObject, tocsList yuquesdk.RepoToc) {
 	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
 	eds := export.GetDocDetail(h, tocsList.Data)
-
-	fmt.Println(eds.ExceptionDocs)
 
 	// 输出异常笔记信息
 	for _, d := range eds.ExceptionDocs {
