@@ -11,7 +11,7 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
 )
 
-func ExportDoc(exportURL string, path string, tocName string) error {
+func ExportLakebook(exportURL string, path string, tocName string) error {
 	url := exportURL
 	method := "GET"
 
