@@ -6,14 +6,15 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/logging"
 	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
 
 //
-func DiscoverTocs(h *handler.HandlerObject, t yuquesdk.RepoToc) []yuquesdk.RepoTocData {
-	var discoveredTocs []yuquesdk.RepoTocData
+func DiscoverTocs(h *handler.HandlerObject, t core.RepoToc) []core.RepoTocData {
+	var discoveredTocs []core.RepoTocData
 	// 根据用户设定，筛选出需要导出的文档
 	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
 	for _, data := range t.Data {
@@ -26,7 +27,7 @@ func DiscoverTocs(h *handler.HandlerObject, t yuquesdk.RepoToc) []yuquesdk.RepoT
 }
 
 // 导出文档集合
-func exportSet(h *handler.HandlerObject, tocsList yuquesdk.RepoToc) {
+func exportSet(h *handler.HandlerObject, tocsList core.RepoToc) {
 	// 发现需要导出的文档
 	discoveredTocs := DiscoverTocs(h, tocsList)
 	// 输出一些 Debug 信息
@@ -51,7 +52,7 @@ func exportSet(h *handler.HandlerObject, tocsList yuquesdk.RepoToc) {
 }
 
 // 导出知识库中每篇文档
-func exportAll(h *handler.HandlerObject, tocsList yuquesdk.RepoToc) {
+func exportAll(h *handler.HandlerObject, tocsList core.RepoToc) {
 	// 获取 Docs 列表
 	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
 	// docsList := yuque.NewDocsList()
@@ -73,7 +74,7 @@ func exportAll(h *handler.HandlerObject, tocsList yuquesdk.RepoToc) {
 }
 
 // 获取文档详情
-func getDocDetail(h *handler.HandlerObject, tocsList yuquesdk.RepoToc) {
+func getDocDetail(h *handler.HandlerObject, tocsList core.RepoToc) {
 	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
 	eds := export.GetDocDetail(h, tocsList.Data)

@@ -1,4 +1,4 @@
-package yuquesdk
+package v2
 
 //CreateGroup struct for create group
 type CreateGroup struct {

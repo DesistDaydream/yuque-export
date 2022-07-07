@@ -1,34 +1,36 @@
-package yuquesdk
+package service
 
 import (
 	"errors"
 	"fmt"
+
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 )
 
 // GroupService encapsulate authenticated token
 type GroupService struct {
-	client *Client
+	client *core.Client
 }
 
 // NewGroup create Doc for external use
-func NewGroup(client *Client) *GroupService {
+func NewGroup(client *core.Client) *GroupService {
 	return &GroupService{
 		client: client,
 	}
 }
 
 // List groups
-func (g GroupService) List(login string) (Groups, error) {
+func (g GroupService) List(login string) (core.Groups, error) {
 	var (
 		url    string
-		groups Groups
+		groups core.Groups
 	)
 	if len(login) > 0 {
 		url = fmt.Sprintf("users/%s/groups", login)
 	} else {
 		url = "groups"
 	}
-	_, err := g.client.RequestObj(url, &groups, EmptyRO)
+	_, err := g.client.RequestObj(url, &groups, core.EmptyRO)
 	if err != nil {
 		return groups, err
 	}
@@ -36,12 +38,12 @@ func (g GroupService) List(login string) (Groups, error) {
 }
 
 // Get group
-func (g GroupService) Get(login string) (GroupDetail, error) {
-	var gd GroupDetail
+func (g GroupService) Get(login string) (core.GroupDetail, error) {
+	var gd core.GroupDetail
 	if len(login) == 0 {
 		return gd, errors.New("group login or id is required")
 	}
-	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s", login), &gd, EmptyRO)
+	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s", login), &gd, core.EmptyRO)
 	if err != nil {
 		return gd, err
 	}
@@ -49,15 +51,15 @@ func (g GroupService) Get(login string) (GroupDetail, error) {
 }
 
 // Create group
-func (g GroupService) Create(cg *CreateGroup) (GroupDetail, error) {
-	var gd GroupDetail
+func (g GroupService) Create(cg *core.CreateGroup) (core.GroupDetail, error) {
+	var gd core.GroupDetail
 	if len(cg.Name) == 0 {
 		return gd, errors.New("data.name is required")
 	}
 	if len(cg.Login) == 0 {
 		return gd, errors.New("data.login is required")
 	}
-	_, err := g.client.RequestObj("groups", &gd, &RequestOption{
+	_, err := g.client.RequestObj("groups", &gd, &core.RequestOption{
 		Method: "POST",
 		Data:   StructToMapStr(cg),
 	})
@@ -68,13 +70,13 @@ func (g GroupService) Create(cg *CreateGroup) (GroupDetail, error) {
 }
 
 // Update group
-func (g GroupService) Update(login string, cg *CreateGroup) (GroupDetail, error) {
-	var groups GroupDetail
+func (g GroupService) Update(login string, cg *core.CreateGroup) (core.GroupDetail, error) {
+	var groups core.GroupDetail
 
 	if len(login) == 0 {
 		return groups, errors.New("group login or id is required")
 	}
-	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s", login), &groups, &RequestOption{
+	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s", login), &groups, &core.RequestOption{
 		Method: "PUT",
 		Data:   StructToMapStr(cg),
 	})
@@ -85,12 +87,12 @@ func (g GroupService) Update(login string, cg *CreateGroup) (GroupDetail, error)
 }
 
 // Delete group
-func (g GroupService) Delete(login string) (GroupDetail, error) {
-	var groups GroupDetail
+func (g GroupService) Delete(login string) (core.GroupDetail, error) {
+	var groups core.GroupDetail
 	if len(login) == 0 {
 		return groups, errors.New("group login or id is required")
 	}
-	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s", login), &groups, &RequestOption{
+	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s", login), &groups, &core.RequestOption{
 		Method: "DELETE",
 	})
 	if err != nil {
@@ -100,12 +102,12 @@ func (g GroupService) Delete(login string) (GroupDetail, error) {
 }
 
 // ListUsers of group
-func (g GroupService) ListUsers(login string) (GroupUsers, error) {
-	var gd GroupUsers
+func (g GroupService) ListUsers(login string) (core.GroupUsers, error) {
+	var gd core.GroupUsers
 	if len(login) == 0 {
 		return gd, errors.New("group login or id is required")
 	}
-	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s/users", login), &gd, EmptyRO)
+	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s/users", login), &gd, core.EmptyRO)
 	if err != nil {
 		return gd, err
 	}
@@ -113,13 +115,13 @@ func (g GroupService) ListUsers(login string) (GroupUsers, error) {
 }
 
 // ListUsers of group
-func (g GroupService) AddUser(group string, user string, ga *GroupAddUser) (GroupUserInfo, error) {
-	var gd GroupUserInfo
+func (g GroupService) AddUser(group string, user string, ga *core.GroupAddUser) (core.GroupUserInfo, error) {
+	var gd core.GroupUserInfo
 
 	if len(group) == 0 || len(user) == 0 {
 		return gd, errors.New("group and user is required")
 	}
-	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s/users/%s", group, user), &gd, &RequestOption{
+	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s/users/%s", group, user), &gd, &core.RequestOption{
 		Method: "PUT",
 		Data:   StructToMapStr(ga),
 	})
@@ -130,12 +132,12 @@ func (g GroupService) AddUser(group string, user string, ga *GroupAddUser) (Grou
 }
 
 // RemoveUser of group
-func (g GroupService) RemoveUser(group string, user string) (RemoveUserResponse, error) {
-	var gd RemoveUserResponse
+func (g GroupService) RemoveUser(group string, user string) (core.RemoveUserResponse, error) {
+	var gd core.RemoveUserResponse
 	if len(group) == 0 || len(user) == 0 {
 		return gd, errors.New("group and user is required")
 	}
-	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s/users/%s", group, user), &gd, &RequestOption{
+	_, err := g.client.RequestObj(fmt.Sprintf("groups/%s/users/%s", group, user), &gd, &core.RequestOption{
 		Method: "DELETE",
 	})
 	if err != nil {

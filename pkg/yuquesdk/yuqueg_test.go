@@ -6,17 +6,18 @@ import (
 	"testing"
 
 	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 )
 
 var (
 	yu  *yuquesdk.Service
 	rst string
-	l   = yuquesdk.L
+	l   = core.L
 )
 
 func setup() {
-	yu = yuquesdk.NewService("xxx")
-	yuquesdk.SetDebugLevel()
+	yu = yuquesdk.NewService("4agpJJf7G2Xo0rIKCVj3n6GYPSGvQRKPQ4XHZK5Z")
+	core.SetDebugLevel()
 }
 
 func shutdown() {
@@ -42,7 +43,7 @@ func TestUserGet(t *testing.T) {
 	rst = string(jsonString)
 }
 func TestGroupList(t *testing.T) {
-	d, err := yu.Group.List("u22579")
+	d, err := yu.Group.List("desistdaydream")
 	if err != nil {
 		t.Log(err)
 		t.Fail()
@@ -52,7 +53,7 @@ func TestGroupList(t *testing.T) {
 	rst = string(jsonString)
 }
 func TestDocList(t *testing.T) {
-	d, err := yu.Doc.List("u22579/xcd0mr")
+	d, err := yu.Doc.List("desistdaydream/entertainment")
 	if err != nil {
 		t.Log(err)
 		t.Fail()

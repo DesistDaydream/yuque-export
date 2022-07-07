@@ -1,33 +1,35 @@
-package yuquesdk
+package service
 
 import (
 	"fmt"
+
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 )
 
 // UserService encapsulate authenticated token
 type UserService struct {
-	client *Client
+	client *core.Client
 }
 
 // NewUser create User for external use
-func NewUser(client *Client) *UserService {
+func NewUser(client *core.Client) *UserService {
 	return &UserService{
 		client: client,
 	}
 }
 
 // Get user
-func (c UserService) Get(login string) (UserInfo, error) {
+func (c UserService) Get(login string) (core.UserInfo, error) {
 	var (
 		url  string
-		user UserInfo
+		user core.UserInfo
 	)
 	if len(login) > 0 {
 		url = fmt.Sprintf("users/%s", login)
 	} else {
 		url = "user"
 	}
-	_, err := c.client.RequestObj(url, &user, EmptyRO)
+	_, err := c.client.RequestObj(url, &user, core.EmptyRO)
 	if err != nil {
 		return user, err
 	}

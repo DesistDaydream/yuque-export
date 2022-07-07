@@ -1,4 +1,4 @@
-package yuquesdk
+package v2
 
 import "time"
 

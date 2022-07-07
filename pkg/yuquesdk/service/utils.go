@@ -10,7 +10,7 @@ func main() {
 	fmt.Println(m)
 }
 */
-package yuquesdk
+package service
 
 import (
 	"reflect"

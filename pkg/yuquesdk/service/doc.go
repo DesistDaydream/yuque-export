@@ -1,30 +1,32 @@
-package yuquesdk
+package service
 
 import (
 	"errors"
 	"fmt"
+
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 )
 
 // DocService encapsulate authenticated token
 type DocService struct {
-	client *Client
+	client *core.Client
 }
 
 // NewDoc create Doc for external use
-func NewDoc(client *Client) *DocService {
+func NewDoc(client *core.Client) *DocService {
 	return &DocService{
 		client: client,
 	}
 }
 
 // List doc of a repo
-func (doc DocService) List(namespace string) (BookDetail, error) {
-	var b BookDetail
+func (doc DocService) List(namespace string) (core.BookDetail, error) {
+	var b core.BookDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/", namespace)
-	_, err := doc.client.RequestObj(url, &b, EmptyRO)
+	_, err := doc.client.RequestObj(url, &b, core.EmptyRO)
 	if err != nil {
 		return b, err
 	}
@@ -32,13 +34,13 @@ func (doc DocService) List(namespace string) (BookDetail, error) {
 }
 
 // Get detail info of a doc
-func (doc DocService) Get(namespace string, slug string, data *DocGet) (DocDetail, error) {
-	var b DocDetail
+func (doc DocService) Get(namespace string, slug string, data *core.DocGet) (core.DocDetail, error) {
+	var b core.DocDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/%s", namespace, slug)
-	_, err := doc.client.RequestObj(url, &b, &RequestOption{
+	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
 		Data: StructToMapStr(data),
 	})
 	if err != nil {
@@ -48,8 +50,8 @@ func (doc DocService) Get(namespace string, slug string, data *DocGet) (DocDetai
 }
 
 // Create doc
-func (doc DocService) Create(namespace string, data *DocCreate) (DocDetail, error) {
-	var b DocDetail
+func (doc DocService) Create(namespace string, data *core.DocCreate) (core.DocDetail, error) {
+	var b core.DocDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
@@ -57,7 +59,7 @@ func (doc DocService) Create(namespace string, data *DocCreate) (DocDetail, erro
 		data.Format = "markdown"
 	}
 	url := fmt.Sprintf("repos/%s/docs", namespace)
-	_, err := doc.client.RequestObj(url, &b, &RequestOption{
+	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
 		Method: "POST",
 		Data:   StructToMapStr(data),
 	})
@@ -68,8 +70,8 @@ func (doc DocService) Create(namespace string, data *DocCreate) (DocDetail, erro
 }
 
 // Update doc
-func (doc DocService) Update(namespace string, id string, data *DocCreate) (DocDetail, error) {
-	var b DocDetail
+func (doc DocService) Update(namespace string, id string, data *core.DocCreate) (core.DocDetail, error) {
+	var b core.DocDetail
 
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
@@ -78,7 +80,7 @@ func (doc DocService) Update(namespace string, id string, data *DocCreate) (DocD
 		return b, errors.New("doc id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/%s", namespace, id)
-	_, err := doc.client.RequestObj(url, &b, &RequestOption{
+	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
 		Method: "PUT",
 		Data:   StructToMapStr(data),
 	})
@@ -89,8 +91,8 @@ func (doc DocService) Update(namespace string, id string, data *DocCreate) (DocD
 }
 
 // Delete doc
-func (doc DocService) Delete(namespace string, id string) (DocDetail, error) {
-	var b DocDetail
+func (doc DocService) Delete(namespace string, id string) (core.DocDetail, error) {
+	var b core.DocDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
@@ -98,7 +100,7 @@ func (doc DocService) Delete(namespace string, id string) (DocDetail, error) {
 		return b, errors.New("doc id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/%s", namespace, id)
-	_, err := doc.client.RequestObj(url, &b, &RequestOption{
+	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
 		Method: "DELETE",
 	})
 	if err != nil {

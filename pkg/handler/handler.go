@@ -58,43 +58,6 @@ func NewYuqueClient(flags YuqueHandlerFlags) *YuqueClient {
 	}
 }
 
-// 处理语雀 API V2 时要使用的 HTTP 处理器
-func (yc *YuqueClient) RequestV2(method string, endpoint string, reqBody []byte, data YuqueDataHandler) error {
-	url := YuqueBaseAPIV2 + endpoint
-	logrus.WithFields(logrus.Fields{
-		"url":     url,
-		"method":  method,
-		"reqBody": string(reqBody),
-	}).Debug("检查发起请求时的URL")
-
-	// 创建一个新的 Request
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return fmt.Errorf("创建HTTP请求异常:%v", err)
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Auth-Token", yc.Token)
-
-	resp, err := yc.Client.Do(req)
-	if err != nil || resp.StatusCode != 200 {
-		return fmt.Errorf("响应异常,状态:%v,错误:%v", resp.Status, err)
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("读取响应体错误:%v", err)
-	}
-
-	err = json.Unmarshal(respBody, data)
-	if err != nil {
-		return fmt.Errorf("解析响应体错误:%v", err)
-	}
-
-	return nil
-}
-
 // 处理语雀 API 时要使用的 HTTP 处理器。现阶段只有 books/{namesapce}/export 接口会用到
 func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, data YuqueDataHandler) error {
 	url := YuqueBaseAPI + endpoint

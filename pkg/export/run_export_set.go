@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
-	"github.com/DesistDaydream/yuque-export/pkg/yuque"
-	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
+	yuque "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v1"
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,7 +15,7 @@ var (
 	FailureCount int
 )
 
-func ExportSet(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) {
+func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData) {
 	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -29,7 +29,7 @@ func ExportSet(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) {
 		// 并发
 		wg.Add(1)
 
-		go func(toc yuquesdk.RepoTocData) {
+		go func(toc core.RepoTocData) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL

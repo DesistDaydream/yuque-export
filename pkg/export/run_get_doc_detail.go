@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
-	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
+	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,7 +20,7 @@ type ExceptionDocs struct {
 }
 
 // 某些情况下，代替其他两个 RunXXX 函数以获取笔记详情
-func GetDocDetail(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) ExceptionDocs {
+func GetDocDetail(h *handler.HandlerObject, tocs []core.RepoTocData) ExceptionDocs {
 	var eds ExceptionDocs
 
 	var wg sync.WaitGroup
@@ -32,11 +32,11 @@ func GetDocDetail(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) Excepti
 
 		wg.Add(1)
 
-		go func(toc yuquesdk.RepoTocData) {
+		go func(toc core.RepoTocData) {
 			defer wg.Done()
 
 			// 获取 Doc 详情数据
-			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &yuquesdk.DocGet{Raw: 1})
+			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &core.DocGet{Raw: 1})
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"doc": docDetail.Data.Title,

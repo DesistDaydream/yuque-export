@@ -7,6 +7,16 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 )
 
+// 其他
+type ExportsData struct {
+	Data Export `json:"data"`
+}
+
+type Export struct {
+	State string `json:"state"`
+	URL   string `json:"url"`
+}
+
 // ReqBodyForGetExportURL is
 type ReqBodyForExportData struct {
 	Type         string `json:"type"`
