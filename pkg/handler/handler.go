@@ -1,20 +1,53 @@
 package handler
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
+	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
-	"github.com/sirupsen/logrus"
+	"github.com/spf13/pflag"
 )
 
-var (
-	YuqueBaseAPI   = "https://www.yuque.com/api"
-	YuqueBaseAPIV2 = "https://www.yuque.com/api/v2"
-)
+// YuqueHandlerFlags 通过命令行标志传递的认证选项
+type YuqueHandlerFlags struct {
+	// UserName string
+	RepoName string
+
+	// 导出方式
+	ExportMethod string
+	// 文件保存路径
+	Path string
+
+	// 关于 http.Client 的选项
+	// HTTP 请求的超时时间
+	Timeout time.Duration
+
+	// 导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求
+	ExportDuration int64
+	// 并发数
+	Concurrency int
+
+	// 专用于导出文档集合的选项
+	// 待导出知识库的深度。也就是目录层级
+	TocDepth int
+	// 是否导出笔记，用来测试
+	IsExport bool
+}
+
+// AddFlag 用来为语雀用户数据设置一些值
+func (opts *YuqueHandlerFlags) AddFlag() {
+	// pflag.StringVar(&opts.UserName, "user-name", "DesistDaydream", "用户名称")
+	pflag.StringVar(&opts.RepoName, "repo-name", "学习知识库", "待导出知识库名称")
+
+	pflag.StringVar(&opts.ExportMethod, "method", "set", "导出方式,one of: set|all.set 导出文档集合;all 导出每一篇文档")
+	pflag.StringVar(&opts.Path, "paht", "./files", "导出路径")
+
+	pflag.DurationVar(&opts.Timeout, "time-out", time.Second*60, "Timeout on HTTP requests to the Yuque API.unit:second")
+
+	pflag.IntVar(&opts.TocDepth, "toc-depth", 2, "知识库的深度，即从哪一级目录开始导出")
+	pflag.BoolVar(&opts.IsExport, "export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
+	pflag.Int64Var(&opts.ExportDuration, "export-duration", 15, "导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求")
+	pflag.IntVar(&opts.Concurrency, "concurrency", 1, "并发数量.")
+}
 
 // 用来处理语雀API的数据
 type HandlerObject struct {
@@ -22,6 +55,7 @@ type HandlerObject struct {
 	UserName string
 	// 待导出的知识库。可以是仓库的ID，也可以是以斜线分割的用户名和仓库slug的组合
 	Namespace string
+	RepoID    int
 
 	// 命令行选项
 	Flags YuqueHandlerFlags
@@ -35,64 +69,4 @@ func NewHandlerObject(flags YuqueHandlerFlags, client *yuquesdk.Service) *Handle
 		Flags:  flags,
 		Client: client,
 	}
-}
-
-type YuqueClient struct {
-	Client    *http.Client
-	Token     string
-	Referer   string
-	Cookie    string
-	UserName  string
-	Namespace int
-}
-
-// 实例化一个向 Yuque API 发起 HTTP 请求的客户端
-func NewYuqueClient(flags YuqueHandlerFlags) *YuqueClient {
-	return &YuqueClient{
-		Client:    &http.Client{Timeout: flags.Timeout},
-		Token:     flags.Token,
-		Referer:   flags.Referer,
-		Cookie:    flags.Cookie,
-		UserName:  "",
-		Namespace: 0,
-	}
-}
-
-// 处理语雀 API 时要使用的 HTTP 处理器。现阶段只有 books/{namesapce}/export 接口会用到
-func (yc *YuqueClient) Request(method string, endpoint string, reqBody []byte, data YuqueDataHandler) error {
-	url := YuqueBaseAPI + endpoint
-	logrus.WithFields(logrus.Fields{
-		"url":     url,
-		"method":  method,
-		"reqBody": string(reqBody),
-	}).Debug("检查发起请求时的URL")
-
-	// 创建一个新的 Request
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return fmt.Errorf("创建HTTP请求异常:%v", err)
-	}
-
-	req.Header.Add("content-type", "application/json")
-	req.Header.Add("referer", yc.Referer)
-	req.Header.Add("cookie", yc.Cookie)
-	req.Header.Add("X-Auth-Token", yc.Token)
-
-	resp, err := yc.Client.Do(req)
-	if err != nil || resp.StatusCode != 200 {
-		return fmt.Errorf("响应异常,状态:%v,错误:%v", resp.Status, err)
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("读取响应体错误:%v", err)
-	}
-
-	err = json.Unmarshal(respBody, data)
-	if err != nil {
-		return fmt.Errorf("解析响应体错误:%v", err)
-	}
-
-	return nil
 }

@@ -2,3 +2,4 @@
 .vscode/sftp.json
 lichenhao.yaml
 pkg/yuquesdk/yuque.log
+files/*.lakebook

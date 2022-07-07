@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
+	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 	yuque "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v1"
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 	"github.com/sirupsen/logrus"
@@ -15,7 +16,7 @@ var (
 	FailureCount int
 )
 
-func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData) {
+func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.AuthInfo) {
 	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -33,9 +34,9 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
-			exportsData := yuque.NewExportsData()
-			err := exportsData.Get(h, toc.UUID)
-
+			a := yuque.NewYuqueClient(auth)
+			exportsData := yuque.NewBookService(a)
+			resp, err := exportsData.Get(toc.UUID, h.RepoID, auth)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,
@@ -46,12 +47,12 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData) {
 				logrus.WithFields(logrus.Fields{
 					"toc_title":  toc.Title,
 					"toc_uuid":   toc.UUID,
-					"export_url": exportsData.Data.URL,
+					"export_url": resp.Data.URL,
 				}).Infof("获取待导出 TOC 的 URL 成功!")
 
 				// 导出笔记
 				if h.Flags.IsExport {
-					err = ExportLakebook(exportsData.Data.URL, h.Flags.Path, toc.Title)
+					err = ExportLakebook(resp.Data.URL, h.Flags.Path, toc.Title)
 					if err != nil {
 						logrus.WithFields(logrus.Fields{
 							"err": err,

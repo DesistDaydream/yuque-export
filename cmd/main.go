@@ -27,7 +27,7 @@ func DiscoverTocs(h *handler.HandlerObject, t core.RepoToc) []core.RepoTocData {
 }
 
 // 导出文档集合
-func exportSet(h *handler.HandlerObject, tocsList core.RepoToc) {
+func exportSet(h *handler.HandlerObject, tocsList core.RepoToc, auth config.AuthInfo) {
 	// 发现需要导出的文档
 	discoveredTocs := DiscoverTocs(h, tocsList)
 	// 输出一些 Debug 信息
@@ -42,7 +42,7 @@ func exportSet(h *handler.HandlerObject, tocsList core.RepoToc) {
 	}
 
 	// 导出多个文档集合
-	export.ExportSet(h, discoveredTocs)
+	export.ExportSet(h, discoveredTocs, auth)
 
 	logrus.WithFields(logrus.Fields{
 		"总共": len(discoveredTocs),
@@ -93,6 +93,7 @@ func getDocDetail(h *handler.HandlerObject, tocsList core.RepoToc) {
 }
 
 func main() {
+	authFile := pflag.StringP("file", "f", "lichenhao.yaml", "配置文件路径")
 	// 设置命令行标志
 	logFlags := &logging.LoggingFlags{}
 	logFlags.AddFlags()
@@ -105,7 +106,7 @@ func main() {
 		logrus.Fatal("初始化日志失败", err)
 	}
 
-	auth := config.NewAuthInfo("lichenhao.yaml")
+	auth := config.NewAuthInfo(*authFile)
 
 	// 通过 sdk 实例化语雀客户端
 	y := yuquesdk.NewService(auth.Token)
@@ -135,6 +136,7 @@ func main() {
 	for _, repo := range repos.Data {
 		if repo.Name == auth.RepoName {
 			h.Namespace = repo.Namespace
+			h.RepoID = repo.ID
 			logrus.Infof("将要导出【%v】知识库，Namespace 为 %v", auth.RepoName, repo.Namespace)
 			break
 		}
@@ -149,7 +151,7 @@ func main() {
 
 	switch yhFlags.ExportMethod {
 	case "set":
-		exportSet(h, tocs)
+		exportSet(h, tocs, *auth)
 	case "all":
 		exportAll(h, tocs)
 	case "get":
