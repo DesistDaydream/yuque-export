@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
 )
@@ -16,7 +17,9 @@ var (
 )
 
 func setup() {
-	yu = yuquesdk.NewService("4agpJJf7G2Xo0rIKCVj3n6GYPSGvQRKPQ4XHZK5Z")
+	auth := config.NewAuthInfo("../../DesistDaydream.yaml")
+
+	yu = yuquesdk.NewService(auth.Token)
 	core.SetDebugLevel()
 }
 

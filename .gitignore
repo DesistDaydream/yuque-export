@@ -1,5 +1,5 @@
 
 .vscode/sftp.json
-lichenhao.yaml
-pkg/yuquesdk/yuque.log
+pkg/yuquesdk/*.log
 files/*.lakebook
+DesistDaydream.yaml
