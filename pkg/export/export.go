@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/DesistDaydream/yuque-export/pkg/utils/converter"
-	"github.com/DesistDaydream/yuque-export/pkg/yuque"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
 )
 
 func ExportDoc(exportURL string, path string, tocName string) error {
@@ -40,7 +40,7 @@ func ExportDoc(exportURL string, path string, tocName string) error {
 	return nil
 }
 
-func ExportMd(dd *yuque.DocDetailData, path string) error {
+func ExportMd(dd yuquesdk.DocDetail, path string) error {
 	// 将文档标题中的 / 替换为 -，防止无法创建文件
 	newName := strings.ReplaceAll(dd.Data.Title, "/", "-")
 	newName = strings.ReplaceAll(newName, " ", "-")

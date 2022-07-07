@@ -40,7 +40,7 @@ func (opts *YuqueHandlerFlags) AddFlag() {
 	pflag.StringVar(&opts.RepoName, "repo-name", "学习知识库", "待导出知识库名称")
 	pflag.StringVar(&opts.Cookie, "user-cookie", "", "用户 Cookie,通过浏览器的 F12 查看")
 	pflag.StringVar(&opts.Referer, "referer", "https://www.yuque.com", "用于获取导出笔记的 URL")
-	pflag.StringVar(&opts.Token, "user-token", "", "用户 Token,在 https://www.yuque.com/settings/tokens/ 创建")
+	// pflag.StringVar(&opts.Token, "user-token", "", "用户 Token,在 https://www.yuque.com/settings/tokens/ 创建")
 
 	pflag.StringVar(&opts.ExportMethod, "method", "set", "导出方式,one of: set|all.set 导出文档集合;all 导出每一篇文档")
 	pflag.StringVar(&opts.Path, "paht", "./files", "导出路径")

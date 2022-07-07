@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
 	"github.com/sirupsen/logrus"
 )
 
@@ -24,12 +25,15 @@ type HandlerObject struct {
 
 	// 命令行选项
 	Flags YuqueHandlerFlags
+
+	Client *yuquesdk.Service
 }
 
 // 根据命令行标志实例化一个处理器
-func NewHandlerObject(flags YuqueHandlerFlags) *HandlerObject {
+func NewHandlerObject(flags YuqueHandlerFlags, client *yuquesdk.Service) *HandlerObject {
 	return &HandlerObject{
-		Flags: flags,
+		Flags:  flags,
+		Client: client,
 	}
 }
 

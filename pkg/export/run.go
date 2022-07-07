@@ -6,6 +6,7 @@ import (
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/DesistDaydream/yuque-export/pkg/yuque"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,7 +15,7 @@ var (
 	FailureCount int
 )
 
-func ExportSet(h *handler.HandlerObject, tocs []yuque.TOC) {
+func ExportSet(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) {
 	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -28,12 +29,13 @@ func ExportSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 		// 并发
 		wg.Add(1)
 
-		go func(toc yuque.TOC) {
+		go func(toc yuquesdk.RepoTocData) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
 			exportsData := yuque.NewExportsData()
 			err := exportsData.Get(h, toc.UUID)
+
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"err": err,
@@ -71,7 +73,7 @@ func ExportSet(h *handler.HandlerObject, tocs []yuque.TOC) {
 	}
 }
 
-func ExportAll(h *handler.HandlerObject, tocs []yuque.TOC) {
+func ExportAll(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -87,12 +89,13 @@ func ExportAll(h *handler.HandlerObject, tocs []yuque.TOC) {
 
 		wg.Add(1)
 
-		go func(toc yuque.TOC) {
+		go func(toc yuquesdk.RepoTocData) {
 			defer wg.Done()
 
 			// 获取 Doc 的 HTML 格式信息
-			docDetail := yuque.NewDocDetail()
-			err := docDetail.Get(h, toc.Slug)
+			// docDetail := yuque.NewDocDetail()
+			// err := docDetail.Get(h, toc.Slug)
+			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &yuquesdk.DocGet{Raw: 1})
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"doc": docDetail.Data.Title,
@@ -107,8 +110,13 @@ func ExportAll(h *handler.HandlerObject, tocs []yuque.TOC) {
 						"doc": docDetail.Data.Title,
 						"err": err,
 					}).Error("导出 MD 失败!")
+
 					FailureCount++
 				} else {
+					logrus.WithFields(logrus.Fields{
+						"doc": docDetail.Data.Title,
+					}).Infoln("导出 MD 成功!")
+
 					SuccessCount++
 				}
 			}
@@ -131,7 +139,7 @@ type ExceptionDocs struct {
 }
 
 // 某些情况下，代替其他两个 RunXXX 函数以获取笔记详情
-func GetDocDetail(h *handler.HandlerObject, tocs []yuque.TOC) ExceptionDocs {
+func GetDocDetail(h *handler.HandlerObject, tocs []yuquesdk.RepoTocData) ExceptionDocs {
 	var eds ExceptionDocs
 
 	var wg sync.WaitGroup
@@ -143,17 +151,21 @@ func GetDocDetail(h *handler.HandlerObject, tocs []yuque.TOC) ExceptionDocs {
 
 		wg.Add(1)
 
-		go func(toc yuque.TOC) {
+		go func(toc yuquesdk.RepoTocData) {
 			defer wg.Done()
 
-			docDetail := yuque.NewDocDetail()
 			// 获取 Doc 详情数据
-			if err := docDetail.Get(h, toc.Slug); err != nil {
+			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &yuquesdk.DocGet{Raw: 1})
+			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"doc": docDetail.Data.Title,
 					"err": err,
 				}).Error("获取文档详情失败!")
 			} else {
+				logrus.WithFields(logrus.Fields{
+					"b.文档": docDetail.Data.Title,
+					"a.状态": docDetail.Data.Public,
+				}).Debugln("获取文档详情成功，0 私密,1 公开")
 				// 判断文档是否为公开的。0 为私密，1 为公开
 				if docDetail.Data.Public == 0 {
 					eds.ExceptionDocs = append(eds.ExceptionDocs, ExceptionDoc{
