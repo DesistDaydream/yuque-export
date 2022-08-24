@@ -40,7 +40,7 @@ func ExportLakebook(exportURL string, path string, tocName string) error {
 	return nil
 }
 
-func ExportMd(dd models.DocDetail, path string) error {
+func ExportMd(dd *models.DocDetail, path string) error {
 	// 将文档标题中的 / 替换为 -，防止无法创建文件
 	newName := strings.ReplaceAll(dd.Data.Title, "/", "-")
 	newName = strings.ReplaceAll(newName, " ", "-")

@@ -16,7 +16,7 @@ var (
 	FailureCount int
 )
 
-func ExportSet(h *handler.HandlerObject, tocs []models.RepoTocData, auth config.AuthInfo) {
+func ExportSet(h *handler.HandlerObject, tocs []*models.RepoTocData, auth config.AuthInfo) {
 	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -30,7 +30,7 @@ func ExportSet(h *handler.HandlerObject, tocs []models.RepoTocData, auth config.
 		// 并发
 		wg.Add(1)
 
-		go func(toc models.RepoTocData) {
+		go func(toc *models.RepoTocData) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL

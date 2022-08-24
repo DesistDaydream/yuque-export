@@ -19,14 +19,14 @@ func NewBookService(client *core.Client) *BookService {
 	}
 }
 
-func (book *BookService) GetDownloadURL(request *models.BookExportRequest, time time.Duration, repoID int) (models.BookExport, error) {
-	var be models.BookExport
+func (book *BookService) GetDownloadURL(request *models.BookExportRequest, time time.Duration, repoID int) (*models.BookExport, error) {
+	var be *models.BookExport
 	endpoint := fmt.Sprintf("books/%v/export", repoID)
 
 	// 解析请求体
 	reqBodyByte, err := json.Marshal(request)
 	if err != nil {
-		return models.BookExport{}, err
+		return nil, err
 	}
 
 	reqOpt := core.RequestOption{
@@ -36,7 +36,7 @@ func (book *BookService) GetDownloadURL(request *models.BookExportRequest, time 
 
 	_, err = book.Client.Request(endpoint, reqBodyByte, &be, &reqOpt)
 	if err != nil {
-		return models.BookExport{}, err
+		return nil, err
 	}
 
 	return be, nil

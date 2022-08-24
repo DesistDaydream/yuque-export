@@ -20,10 +20,10 @@ func NewUser(client *core.Client) *UserService {
 }
 
 // Get user
-func (c UserService) Get(login string) (models.UserInfo, error) {
+func (c UserService) Get(login string) (*models.UserInfo, error) {
 	var (
 		url  string
-		user models.UserInfo
+		user *models.UserInfo
 	)
 	if len(login) > 0 {
 		url = fmt.Sprintf("users/%s", login)
@@ -32,7 +32,7 @@ func (c UserService) Get(login string) (models.UserInfo, error) {
 	}
 	_, err := c.client.RequestObj(url, &user, core.EmptyRO)
 	if err != nil {
-		return user, err
+		return nil, err
 	}
 	return user, nil
 }

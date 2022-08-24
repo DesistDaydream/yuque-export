@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func ExportAll(h *handler.HandlerObject, tocs []models.RepoTocData) {
+func ExportAll(h *handler.HandlerObject, tocs []*models.RepoTocData) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -25,7 +25,7 @@ func ExportAll(h *handler.HandlerObject, tocs []models.RepoTocData) {
 
 		wg.Add(1)
 
-		go func(toc models.RepoTocData) {
+		go func(toc *models.RepoTocData) {
 			defer wg.Done()
 
 			// 获取 Doc 的 HTML 格式信息

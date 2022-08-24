@@ -69,7 +69,7 @@ func (yc *Client) Request(endpoint string, reqBody []byte, container interface{}
 	if err != nil {
 		return nil, err
 	} else if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("响应异常,状态:%v,错误:%v", resp.StatusCode, err)
+		return nil, fmt.Errorf("响应异常,状态:%v,错误:%v", resp.Status, err)
 	}
 
 	defer resp.Body.Close()

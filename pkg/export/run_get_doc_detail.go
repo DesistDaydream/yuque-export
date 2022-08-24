@@ -20,7 +20,7 @@ type ExceptionDocs struct {
 }
 
 // 某些情况下，代替其他两个 RunXXX 函数以获取笔记详情
-func GetDocDetail(h *handler.HandlerObject, tocs []models.RepoTocData) ExceptionDocs {
+func GetDocDetail(h *handler.HandlerObject, tocs []*models.RepoTocData) ExceptionDocs {
 	var eds ExceptionDocs
 
 	var wg sync.WaitGroup
@@ -32,7 +32,7 @@ func GetDocDetail(h *handler.HandlerObject, tocs []models.RepoTocData) Exception
 
 		wg.Add(1)
 
-		go func(toc models.RepoTocData) {
+		go func(toc *models.RepoTocData) {
 			defer wg.Done()
 
 			// 获取 Doc 详情数据

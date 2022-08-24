@@ -13,10 +13,12 @@ import (
 )
 
 // 发现需要导出的 Tocs
-func DiscoverTocs(h *handler.HandlerObject, t models.RepoToc, slugs []string) []models.RepoTocData {
-	var discoveredTocs []models.RepoTocData
+func DiscoverTocs(h *handler.HandlerObject, t *models.RepoToc, slugs []string) []*models.RepoTocData {
+	var discoveredTocs []*models.RepoTocData
+
 	// 根据用户设定，筛选出需要导出的文档
 	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
+
 	// 若指定了文档的 slugs，则发现指定知识库深度的文档中指定 slugs 的文档
 	if len(slugs) > 0 {
 		for _, slug := range slugs {
@@ -34,13 +36,6 @@ func DiscoverTocs(h *handler.HandlerObject, t models.RepoToc, slugs []string) []
 		}
 	}
 
-	return discoveredTocs
-}
-
-// 导出文档集合
-func exportSet(h *handler.HandlerObject, tocsList models.RepoToc, auth config.AuthInfo) {
-	// 发现需要导出的文档
-	discoveredTocs := DiscoverTocs(h, tocsList, auth.Slugs)
 	// 输出一些 Debug 信息
 	logrus.Infof("已发现 %v 个节点", len(discoveredTocs))
 
@@ -51,6 +46,14 @@ func exportSet(h *handler.HandlerObject, tocsList models.RepoToc, auth config.Au
 			"toc_node_url":  toc.URL,
 		}).Debug("显示已发现 TOC 的信息")
 	}
+
+	return discoveredTocs
+}
+
+// 导出文档集合
+func exportSet(h *handler.HandlerObject, tocsList *models.RepoToc, auth config.AuthInfo) {
+	// 发现需要导出的文档
+	discoveredTocs := DiscoverTocs(h, tocsList, auth.Slugs)
 
 	// 导出多个文档集合
 	export.ExportSet(h, discoveredTocs, auth)
@@ -63,7 +66,7 @@ func exportSet(h *handler.HandlerObject, tocsList models.RepoToc, auth config.Au
 }
 
 // 导出知识库中每篇文档
-func exportAll(h *handler.HandlerObject, tocsList models.RepoToc) {
+func exportAll(h *handler.HandlerObject, tocsList *models.RepoToc) {
 	// 获取 Docs 列表
 	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
 	// docsList := yuque.NewDocsList()
@@ -85,7 +88,7 @@ func exportAll(h *handler.HandlerObject, tocsList models.RepoToc) {
 }
 
 // 获取文档详情
-func getDocDetail(h *handler.HandlerObject, tocsList models.RepoToc) {
+func getDocDetail(h *handler.HandlerObject, tocsList *models.RepoToc) {
 	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
 	eds := export.GetDocDetail(h, tocsList.Data)

@@ -21,40 +21,40 @@ func NewDoc(client *core.Client) *DocService {
 }
 
 // List doc of a repo
-func (doc DocService) List(namespace string) (models.BookDetail, error) {
-	var b models.BookDetail
+func (doc DocService) List(namespace string) (*models.BookDetail, error) {
+	var b *models.BookDetail
 	if len(namespace) == 0 {
-		return b, errors.New("repo namespace or id is required")
+		return nil, errors.New("repo namespace or id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/", namespace)
 	_, err := doc.client.RequestObj(url, &b, core.EmptyRO)
 	if err != nil {
-		return b, err
+		return nil, err
 	}
 	return b, nil
 }
 
 // Get detail info of a doc
-func (doc DocService) Get(namespace string, slug string, data *models.DocGet) (models.DocDetail, error) {
-	var b models.DocDetail
+func (doc DocService) Get(namespace string, slug string, data *models.DocGet) (*models.DocDetail, error) {
+	var b *models.DocDetail
 	if len(namespace) == 0 {
-		return b, errors.New("repo namespace or id is required")
+		return nil, errors.New("repo namespace or id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/%s", namespace, slug)
 	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
 		Data: StructToMapStr(data),
 	})
 	if err != nil {
-		return b, err
+		return nil, err
 	}
 	return b, nil
 }
 
 // Create doc
-func (doc DocService) Create(namespace string, data *models.DocCreate) (models.DocDetail, error) {
-	var b models.DocDetail
+func (doc DocService) Create(namespace string, data *models.DocCreate) (*models.DocDetail, error) {
+	var b *models.DocDetail
 	if len(namespace) == 0 {
-		return b, errors.New("repo namespace or id is required")
+		return nil, errors.New("repo namespace or id is required")
 	}
 	if len(data.Format) == 0 {
 		data.Format = "markdown"
@@ -65,20 +65,20 @@ func (doc DocService) Create(namespace string, data *models.DocCreate) (models.D
 		Data:   StructToMapStr(data),
 	})
 	if err != nil {
-		return b, err
+		return nil, err
 	}
 	return b, nil
 }
 
 // Update doc
-func (doc DocService) Update(namespace string, id string, data *models.DocCreate) (models.DocDetail, error) {
-	var b models.DocDetail
+func (doc DocService) Update(namespace string, id string, data *models.DocCreate) (*models.DocDetail, error) {
+	var b *models.DocDetail
 
 	if len(namespace) == 0 {
-		return b, errors.New("repo namespace or id is required")
+		return nil, errors.New("repo namespace or id is required")
 	}
 	if len(id) == 0 {
-		return b, errors.New("doc id is required")
+		return nil, errors.New("doc id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/%s", namespace, id)
 	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
@@ -86,26 +86,26 @@ func (doc DocService) Update(namespace string, id string, data *models.DocCreate
 		Data:   StructToMapStr(data),
 	})
 	if err != nil {
-		return b, err
+		return nil, err
 	}
 	return b, nil
 }
 
 // Delete doc
-func (doc DocService) Delete(namespace string, id string) (models.DocDetail, error) {
-	var b models.DocDetail
+func (doc DocService) Delete(namespace string, id string) (*models.DocDetail, error) {
+	var b *models.DocDetail
 	if len(namespace) == 0 {
-		return b, errors.New("repo namespace or id is required")
+		return nil, errors.New("repo namespace or id is required")
 	}
 	if len(id) == 0 {
-		return b, errors.New("doc id is required")
+		return nil, errors.New("doc id is required")
 	}
 	url := fmt.Sprintf("repos/%s/docs/%s", namespace, id)
 	_, err := doc.client.RequestObj(url, &b, &core.RequestOption{
 		Method: "DELETE",
 	})
 	if err != nil {
-		return b, err
+		return nil, err
 	}
 	return b, nil
 }

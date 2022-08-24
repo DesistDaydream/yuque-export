@@ -364,7 +364,7 @@ type CreateUserRepo struct {
 }
 
 type RepoToc struct {
-	Data []RepoTocData `json:"data"`
+	Data []*RepoTocData `json:"data"`
 }
 
 type RepoTocData struct {
