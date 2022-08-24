@@ -7,11 +7,12 @@ import (
 )
 
 type AuthInfo struct {
-	UserName string `json:"username"`
-	Token    string `yaml:"token"`
-	Cookie   string `yaml:"cookie"`
-	Referer  string `yaml:"referer"`
-	RepoName string `yaml:"reponame"`
+	UserName string   `json:"username"`
+	Token    string   `yaml:"token"`
+	Cookie   string   `yaml:"cookie"`
+	Referer  string   `yaml:"referer"`
+	RepoName string   `yaml:"reponame"`
+	Slugs    []string `yaml:"slugs"`
 }
 
 func NewAuthInfo(file string) (authinfo *AuthInfo) {

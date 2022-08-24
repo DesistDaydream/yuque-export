@@ -1,5 +1,7 @@
 username: 用户名
-token: 从https://www.yuque.com/settings/tokens这里获取token
+token: 从 https://www.yuque.com/settings/tokens 这里获取token
 cookie: 访问文档时的cookie
 referer: "https://www.yuque.com"
 reponame: 想要导出的知识库的名称
+slugs:
+  - 文档 URL 中最后一个斜线后面的部分。可以为空。仅在导出文档集合时有用。

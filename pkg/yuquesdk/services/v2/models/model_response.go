@@ -1,13 +1,6 @@
-package v2
+package models
 
 import "time"
-
-var (
-	// BaseAPI address
-	BaseAPI = "https://www.yuque.com/api/v2/"
-	//EmptyRO empty options
-	EmptyRO = new(RequestOption)
-)
 
 // User UserSerializer
 type User struct {

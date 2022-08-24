@@ -1,9 +1,10 @@
-package service
+package v2
 
 import (
 	"fmt"
 
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 )
 
 // UserService encapsulate authenticated token
@@ -19,10 +20,10 @@ func NewUser(client *core.Client) *UserService {
 }
 
 // Get user
-func (c UserService) Get(login string) (core.UserInfo, error) {
+func (c UserService) Get(login string) (models.UserInfo, error) {
 	var (
 		url  string
-		user core.UserInfo
+		user models.UserInfo
 	)
 	if len(login) > 0 {
 		url = fmt.Sprintf("users/%s", login)

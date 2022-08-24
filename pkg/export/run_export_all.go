@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
-	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 	"github.com/sirupsen/logrus"
 )
 
-func ExportAll(h *handler.HandlerObject, tocs []core.RepoTocData) {
+func ExportAll(h *handler.HandlerObject, tocs []models.RepoTocData) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
@@ -25,11 +25,11 @@ func ExportAll(h *handler.HandlerObject, tocs []core.RepoTocData) {
 
 		wg.Add(1)
 
-		go func(toc core.RepoTocData) {
+		go func(toc models.RepoTocData) {
 			defer wg.Done()
 
 			// 获取 Doc 的 HTML 格式信息
-			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &core.DocGet{Raw: 1})
+			docDetail, err := h.Client.Doc.Get(h.Namespace, toc.Slug, &models.DocGet{Raw: 1})
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
 					"doc": docDetail.Data.Title,

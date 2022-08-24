@@ -1,10 +1,11 @@
-package service
+package v2
 
 import (
 	"errors"
 	"fmt"
 
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 )
 
 // GroupService encapsulate authenticated token
@@ -20,10 +21,10 @@ func NewGroup(client *core.Client) *GroupService {
 }
 
 // List groups
-func (g GroupService) List(login string) (core.Groups, error) {
+func (g GroupService) List(login string) (models.Groups, error) {
 	var (
 		url    string
-		groups core.Groups
+		groups models.Groups
 	)
 	if len(login) > 0 {
 		url = fmt.Sprintf("users/%s/groups", login)
@@ -38,8 +39,8 @@ func (g GroupService) List(login string) (core.Groups, error) {
 }
 
 // Get group
-func (g GroupService) Get(login string) (core.GroupDetail, error) {
-	var gd core.GroupDetail
+func (g GroupService) Get(login string) (models.GroupDetail, error) {
+	var gd models.GroupDetail
 	if len(login) == 0 {
 		return gd, errors.New("group login or id is required")
 	}
@@ -51,8 +52,8 @@ func (g GroupService) Get(login string) (core.GroupDetail, error) {
 }
 
 // Create group
-func (g GroupService) Create(cg *core.CreateGroup) (core.GroupDetail, error) {
-	var gd core.GroupDetail
+func (g GroupService) Create(cg *models.CreateGroup) (models.GroupDetail, error) {
+	var gd models.GroupDetail
 	if len(cg.Name) == 0 {
 		return gd, errors.New("data.name is required")
 	}
@@ -70,8 +71,8 @@ func (g GroupService) Create(cg *core.CreateGroup) (core.GroupDetail, error) {
 }
 
 // Update group
-func (g GroupService) Update(login string, cg *core.CreateGroup) (core.GroupDetail, error) {
-	var groups core.GroupDetail
+func (g GroupService) Update(login string, cg *models.CreateGroup) (models.GroupDetail, error) {
+	var groups models.GroupDetail
 
 	if len(login) == 0 {
 		return groups, errors.New("group login or id is required")
@@ -87,8 +88,8 @@ func (g GroupService) Update(login string, cg *core.CreateGroup) (core.GroupDeta
 }
 
 // Delete group
-func (g GroupService) Delete(login string) (core.GroupDetail, error) {
-	var groups core.GroupDetail
+func (g GroupService) Delete(login string) (models.GroupDetail, error) {
+	var groups models.GroupDetail
 	if len(login) == 0 {
 		return groups, errors.New("group login or id is required")
 	}
@@ -102,8 +103,8 @@ func (g GroupService) Delete(login string) (core.GroupDetail, error) {
 }
 
 // ListUsers of group
-func (g GroupService) ListUsers(login string) (core.GroupUsers, error) {
-	var gd core.GroupUsers
+func (g GroupService) ListUsers(login string) (models.GroupUsers, error) {
+	var gd models.GroupUsers
 	if len(login) == 0 {
 		return gd, errors.New("group login or id is required")
 	}
@@ -115,8 +116,8 @@ func (g GroupService) ListUsers(login string) (core.GroupUsers, error) {
 }
 
 // ListUsers of group
-func (g GroupService) AddUser(group string, user string, ga *core.GroupAddUser) (core.GroupUserInfo, error) {
-	var gd core.GroupUserInfo
+func (g GroupService) AddUser(group string, user string, ga *models.GroupAddUser) (models.GroupUserInfo, error) {
+	var gd models.GroupUserInfo
 
 	if len(group) == 0 || len(user) == 0 {
 		return gd, errors.New("group and user is required")
@@ -132,8 +133,8 @@ func (g GroupService) AddUser(group string, user string, ga *core.GroupAddUser) 
 }
 
 // RemoveUser of group
-func (g GroupService) RemoveUser(group string, user string) (core.RemoveUserResponse, error) {
-	var gd core.RemoveUserResponse
+func (g GroupService) RemoveUser(group string, user string) (models.RemoveUserResponse, error) {
+	var gd models.RemoveUserResponse
 	if len(group) == 0 || len(user) == 0 {
 		return gd, errors.New("group and user is required")
 	}

@@ -10,7 +10,7 @@ func main() {
 	fmt.Println(m)
 }
 */
-package service
+package v2
 
 import (
 	"reflect"

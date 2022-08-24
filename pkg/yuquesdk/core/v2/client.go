@@ -12,6 +12,13 @@ import (
 	// log "github.com/sirupsen/logrus"
 )
 
+var (
+	// BaseAPI address
+	BaseAPI = "https://www.yuque.com/api/v2/"
+	//EmptyRO empty options
+	EmptyRO = new(RequestOption)
+)
+
 // Client encapsulate authenticated token
 type Client struct {
 	token string

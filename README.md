@@ -19,6 +19,7 @@
 - reponame 想要导出的知识库名称
 - cookie 从浏览器的 F12 中获取(只在导出 lakebook 格式的文档集合中有用)
 - referer 为当前知识库的 URL(只在导出 lakebook 格式的文档集合中有用)
+- slugs 为文档 URL 最后一部分，可以为空，若指定了 slugs，则只导出这些 slugs 的文档
 
 ## 导出文档集合
 

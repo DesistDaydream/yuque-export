@@ -4,17 +4,17 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 	corev1 "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v1"
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
-	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/service"
-	servicev1 "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/service/v1"
+	servicev1 "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v1"
+	services "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2"
 )
 
 // Service encapsulate authenticated token
 type Service struct {
 	Client *core.Client
-	User   *service.UserService
-	Doc    *service.DocService
-	Repo   *service.RepoService
-	Group  *service.GroupService
+	User   *services.UserService
+	Doc    *services.DocService
+	Repo   *services.RepoService
+	Group  *services.GroupService
 }
 
 // NewService create Client for external use
@@ -26,10 +26,10 @@ func NewService(token string) *Service {
 
 func (s *Service) Init(token string) {
 	s.Client = core.NewClient(token)
-	s.User = service.NewUser(s.Client)
-	s.Doc = service.NewDoc(s.Client)
-	s.Repo = service.NewRepo(s.Client)
-	s.Group = service.NewGroup(s.Client)
+	s.User = services.NewUser(s.Client)
+	s.Doc = services.NewDoc(s.Client)
+	s.Repo = services.NewRepo(s.Client)
+	s.Group = services.NewGroup(s.Client)
 }
 
 type ServiceV1 struct {

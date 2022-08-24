@@ -6,8 +6,8 @@ import (
 
 	"github.com/DesistDaydream/yuque-export/pkg/handler"
 	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
-	corev1 "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v1"
-	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	modelsv1 "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v1/models"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,7 +16,7 @@ var (
 	FailureCount int
 )
 
-func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.AuthInfo) {
+func ExportSet(h *handler.HandlerObject, tocs []models.RepoTocData, auth config.AuthInfo) {
 	// 并发
 	var wg sync.WaitGroup
 	defer wg.Wait()
@@ -30,11 +30,11 @@ func ExportSet(h *handler.HandlerObject, tocs []core.RepoTocData, auth config.Au
 		// 并发
 		wg.Add(1)
 
-		go func(toc core.RepoTocData) {
+		go func(toc models.RepoTocData) {
 			defer wg.Done()
 
 			// 获取待导出笔记的 URL
-			request := &corev1.BookExportRequest{
+			request := &modelsv1.BookExportRequest{
 				Type:         "lakebook",
 				Force:        0,
 				Title:        toc.Title,

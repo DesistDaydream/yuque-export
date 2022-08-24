@@ -1,4 +1,4 @@
-package v2
+package models
 
 //CreateGroup struct for create group
 type CreateGroup struct {

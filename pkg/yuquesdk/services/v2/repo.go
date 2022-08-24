@@ -1,10 +1,11 @@
-package service
+package v2
 
 import (
 	"errors"
 	"fmt"
 
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 )
 
 // RepoService encapsulate authenticated token
@@ -20,10 +21,10 @@ func NewRepo(client *core.Client) *RepoService {
 }
 
 // List url
-func (r RepoService) List(user string, group string, data map[string]string) (core.UserRepos, error) {
+func (r RepoService) List(user string, group string, data map[string]string) (models.UserRepos, error) {
 	var (
 		url string
-		u   core.UserRepos
+		u   models.UserRepos
 	)
 	if len(user) == 0 && len(group) == 0 {
 		return u, errors.New("user or group is required")
@@ -43,10 +44,10 @@ func (r RepoService) List(user string, group string, data map[string]string) (co
 }
 
 // Create repo
-func (r RepoService) Create(user string, group string, cr *core.CreateRepo) (core.CreateUserRepo, error) {
+func (r RepoService) Create(user string, group string, cr *models.CreateRepo) (models.CreateUserRepo, error) {
 	var (
 		url string
-		u   core.CreateUserRepo
+		u   models.CreateUserRepo
 	)
 	if len(user) == 0 && len(group) == 0 {
 		return u, errors.New("user or group is required")
@@ -67,8 +68,8 @@ func (r RepoService) Create(user string, group string, cr *core.CreateRepo) (cor
 }
 
 // Get repo
-func (r RepoService) Get(namespace string, t string) (core.CreateUserRepo, error) {
-	var u core.CreateUserRepo
+func (r RepoService) Get(namespace string, t string) (models.CreateUserRepo, error) {
+	var u models.CreateUserRepo
 
 	if len(namespace) == 0 && len(t) == 0 {
 		return u, errors.New("namespace or type is required")
@@ -84,8 +85,8 @@ func (r RepoService) Get(namespace string, t string) (core.CreateUserRepo, error
 }
 
 //Update repo
-func (r RepoService) Update(namespace string, cr *core.UpdateRepo) (core.CreateUserRepo, error) {
-	var u core.CreateUserRepo
+func (r RepoService) Update(namespace string, cr *models.UpdateRepo) (models.CreateUserRepo, error) {
+	var u models.CreateUserRepo
 
 	if len(namespace) == 0 {
 		return u, errors.New("namespace is required")
@@ -102,8 +103,8 @@ func (r RepoService) Update(namespace string, cr *core.UpdateRepo) (core.CreateU
 }
 
 //Delete repo
-func (r RepoService) Delete(namespace string) (core.CreateUserRepo, error) {
-	var u core.CreateUserRepo
+func (r RepoService) Delete(namespace string) (models.CreateUserRepo, error) {
+	var u models.CreateUserRepo
 	if len(namespace) == 0 {
 		return u, errors.New("namespace is required")
 	}
@@ -118,8 +119,8 @@ func (r RepoService) Delete(namespace string) (core.CreateUserRepo, error) {
 }
 
 //GetToc of repo
-func (r RepoService) GetToc(namespace string) (core.RepoToc, error) {
-	var u core.RepoToc
+func (r RepoService) GetToc(namespace string) (models.RepoToc, error) {
+	var u models.RepoToc
 	if len(namespace) == 0 {
 		return u, errors.New("namespace is required")
 	}

@@ -6,20 +6,31 @@ import (
 	"github.com/DesistDaydream/yuque-export/pkg/logging"
 	"github.com/DesistDaydream/yuque-export/pkg/utils/config"
 	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk"
-	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
 
-//
-func DiscoverTocs(h *handler.HandlerObject, t core.RepoToc) []core.RepoTocData {
-	var discoveredTocs []core.RepoTocData
+// 发现需要导出的 Tocs
+func DiscoverTocs(h *handler.HandlerObject, t models.RepoToc, slugs []string) []models.RepoTocData {
+	var discoveredTocs []models.RepoTocData
 	// 根据用户设定，筛选出需要导出的文档
 	logrus.Infof("当前知识库共有 %v 个节点", len(t.Data))
-	for _, data := range t.Data {
-		if data.Depth == h.Flags.TocDepth {
-			discoveredTocs = append(discoveredTocs, data)
+	// 若指定了文档的 slugs，则发现指定知识库深度的文档中指定 slugs 的文档
+	if len(slugs) > 0 {
+		for _, slug := range slugs {
+			for _, data := range t.Data {
+				if data.Depth == h.Flags.TocDepth && data.Slug == slug {
+					discoveredTocs = append(discoveredTocs, data)
+				}
+			}
+		}
+	} else { // 若没指定文档的 slugs，则只发现指定知识库深度的文档
+		for _, data := range t.Data {
+			if data.Depth == h.Flags.TocDepth {
+				discoveredTocs = append(discoveredTocs, data)
+			}
 		}
 	}
 
@@ -27,9 +38,9 @@ func DiscoverTocs(h *handler.HandlerObject, t core.RepoToc) []core.RepoTocData {
 }
 
 // 导出文档集合
-func exportSet(h *handler.HandlerObject, tocsList core.RepoToc, auth config.AuthInfo) {
+func exportSet(h *handler.HandlerObject, tocsList models.RepoToc, auth config.AuthInfo) {
 	// 发现需要导出的文档
-	discoveredTocs := DiscoverTocs(h, tocsList)
+	discoveredTocs := DiscoverTocs(h, tocsList, auth.Slugs)
 	// 输出一些 Debug 信息
 	logrus.Infof("已发现 %v 个节点", len(discoveredTocs))
 
@@ -52,7 +63,7 @@ func exportSet(h *handler.HandlerObject, tocsList core.RepoToc, auth config.Auth
 }
 
 // 导出知识库中每篇文档
-func exportAll(h *handler.HandlerObject, tocsList core.RepoToc) {
+func exportAll(h *handler.HandlerObject, tocsList models.RepoToc) {
 	// 获取 Docs 列表
 	// Docs 列表需要分页，暂时还不知道怎么处理，先通过 Tocs 列表获取 Slug
 	// docsList := yuque.NewDocsList()
@@ -74,7 +85,7 @@ func exportAll(h *handler.HandlerObject, tocsList core.RepoToc) {
 }
 
 // 获取文档详情
-func getDocDetail(h *handler.HandlerObject, tocsList core.RepoToc) {
+func getDocDetail(h *handler.HandlerObject, tocsList models.RepoToc) {
 	logrus.Infof("需要导出 %v 篇文档", len(tocsList.Data))
 
 	eds := export.GetDocDetail(h, tocsList.Data)

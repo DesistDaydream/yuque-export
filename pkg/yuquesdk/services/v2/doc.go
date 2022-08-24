@@ -1,10 +1,11 @@
-package service
+package v2
 
 import (
 	"errors"
 	"fmt"
 
 	core "github.com/DesistDaydream/yuque-export/pkg/yuquesdk/core/v2"
+	"github.com/DesistDaydream/yuque-export/pkg/yuquesdk/services/v2/models"
 )
 
 // DocService encapsulate authenticated token
@@ -20,8 +21,8 @@ func NewDoc(client *core.Client) *DocService {
 }
 
 // List doc of a repo
-func (doc DocService) List(namespace string) (core.BookDetail, error) {
-	var b core.BookDetail
+func (doc DocService) List(namespace string) (models.BookDetail, error) {
+	var b models.BookDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
@@ -34,8 +35,8 @@ func (doc DocService) List(namespace string) (core.BookDetail, error) {
 }
 
 // Get detail info of a doc
-func (doc DocService) Get(namespace string, slug string, data *core.DocGet) (core.DocDetail, error) {
-	var b core.DocDetail
+func (doc DocService) Get(namespace string, slug string, data *models.DocGet) (models.DocDetail, error) {
+	var b models.DocDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
@@ -50,8 +51,8 @@ func (doc DocService) Get(namespace string, slug string, data *core.DocGet) (cor
 }
 
 // Create doc
-func (doc DocService) Create(namespace string, data *core.DocCreate) (core.DocDetail, error) {
-	var b core.DocDetail
+func (doc DocService) Create(namespace string, data *models.DocCreate) (models.DocDetail, error) {
+	var b models.DocDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
@@ -70,8 +71,8 @@ func (doc DocService) Create(namespace string, data *core.DocCreate) (core.DocDe
 }
 
 // Update doc
-func (doc DocService) Update(namespace string, id string, data *core.DocCreate) (core.DocDetail, error) {
-	var b core.DocDetail
+func (doc DocService) Update(namespace string, id string, data *models.DocCreate) (models.DocDetail, error) {
+	var b models.DocDetail
 
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
@@ -91,8 +92,8 @@ func (doc DocService) Update(namespace string, id string, data *core.DocCreate) 
 }
 
 // Delete doc
-func (doc DocService) Delete(namespace string, id string) (core.DocDetail, error) {
-	var b core.DocDetail
+func (doc DocService) Delete(namespace string, id string) (models.DocDetail, error) {
+	var b models.DocDetail
 	if len(namespace) == 0 {
 		return b, errors.New("repo namespace or id is required")
 	}
