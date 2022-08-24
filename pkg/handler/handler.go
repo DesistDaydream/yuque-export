@@ -39,8 +39,8 @@ func (opts *YuqueHandlerFlags) AddFlag() {
 
 	pflag.IntVar(&opts.TocDepth, "toc-depth", 2, "知识库的深度，即从哪一级目录开始导出")
 	pflag.BoolVar(&opts.IsExport, "export", false, "是否真实导出笔记，默认不导出，仅查看可以导出的笔记")
-	pflag.Int64Var(&opts.ExportDuration, "export-duration", 15, "导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求")
-	pflag.IntVar(&opts.Concurrency, "concurrency", 1, "并发数量.")
+	pflag.Int64VarP(&opts.ExportDuration, "export-duration", "d", 15, "导出每篇笔记的间隔时间，防止并发过大，语雀将会拒绝请求")
+	pflag.IntVarP(&opts.Concurrency, "concurrency", "c", 1, "并发数量.")
 }
 
 // 用来处理语雀API的数据

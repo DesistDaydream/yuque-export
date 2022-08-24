@@ -13,6 +13,13 @@ import (
 	// log "github.com/sirupsen/logrus"
 )
 
+var (
+	// BaseAPI address
+	BaseAPI = "https://www.yuque.com/api/"
+	//EmptyRO empty options
+	EmptyRO = new(RequestOption)
+)
+
 type Client struct {
 	Token   string
 	Referer string

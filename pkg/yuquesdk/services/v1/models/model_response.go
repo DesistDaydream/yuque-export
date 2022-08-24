@@ -1,11 +1,4 @@
-package v1
-
-var (
-	// BaseAPI address
-	BaseAPI = "https://www.yuque.com/api/"
-	//EmptyRO empty options
-	EmptyRO = new(RequestOption)
-)
+package models
 
 // book/X/export
 type BookExport struct {

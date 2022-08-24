@@ -1,4 +1,4 @@
-package v1
+package models
 
 // ReqBodyForGetExportURL is
 type BookExportRequest struct {
