@@ -33,7 +33,7 @@ type YuqueHandlerFlags struct {
 // AddFlag 用来为语雀用户数据设置一些值
 func (opts *YuqueHandlerFlags) AddFlag() {
 	pflag.StringVar(&opts.ExportMethod, "method", "set", "导出方式,one of: set|all.set 导出文档集合;all 导出每一篇文档")
-	pflag.StringVar(&opts.Path, "paht", "./files", "导出路径")
+	pflag.StringVar(&opts.Path, "path", "./files", "导出路径")
 
 	pflag.DurationVar(&opts.Timeout, "time-out", time.Second*60, "对语雀 API 的 HTTP 请求超时.单位：秒")
 
