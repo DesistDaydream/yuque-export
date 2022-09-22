@@ -16,7 +16,7 @@ import (
 	"reflect"
 )
 
-//StructToMapStr struct to map
+// 将结构体转为 map，用以通过 for 循环同时获取 key 和 value，以便将这些信息添加到请求体中或者 url 的 query 中
 func StructToMapStr(obj interface{}) map[string]string {
 	data := make(map[string]string)
 
@@ -27,7 +27,7 @@ func StructToMapStr(obj interface{}) map[string]string {
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		tField := typeOfType.Field(i)
-		tFieldTag := string(tField.Tag)
+		tFieldTag := string(tField.Tag.Get("request"))
 		if len(tFieldTag) > 0 {
 			data[tFieldTag] = field.String()
 		} else {
